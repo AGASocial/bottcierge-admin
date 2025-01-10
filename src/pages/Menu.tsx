@@ -16,7 +16,7 @@ const Menu: React.FC = () => {
       name: 'Classic Margarita',
       description: 'Traditional margarita with lime and salt',
       price: 12.99,
-      image: 'https://example.com/margarita.jpg',
+      image: 'https://robohash.org/margarita.jpg',
       category: 'cocktails',
       brand: 'House Special',
       status: 'available',
@@ -58,7 +58,7 @@ const Menu: React.FC = () => {
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = !selectedCategory || product.category === selectedCategory;
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
@@ -92,7 +92,6 @@ const Menu: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Menu Management</h1>
-        <button className="btn-primary">Add New Product</button>
       </div>
 
       {/* Search and Filter */}
@@ -134,14 +133,15 @@ const Menu: React.FC = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-start">
                 <h3 className="text-lg font-semibold">{product.name}</h3>
-                <span className={`px-2 py-1 rounded-full text-xs ${
-                  product.status === 'available' ? 'bg-green-500' : 'bg-red-500'
-                }`}>
+                <span className={`cursor-pointer px-2 py-1 rounded-full text-xs ${product.status === 'available' ? 'bg-green-500' : 'bg-red-500'
+                  }`} onClick={() => handleUpdateProduct(product.id, {
+                    status: product.status === 'available' ? 'out_of_stock' : 'available'
+                  })}>
                   {product.status}
                 </span>
               </div>
               <p className="text-sm text-gray-300">{product.description}</p>
-              
+
               {/* Inventory Management */}
               <div className="mt-4 space-y-2">
                 <h4 className="font-semibold">Inventory</h4>
@@ -209,11 +209,10 @@ const Menu: React.FC = () => {
                         }}
                       />
                       <button
-                        className={`px-2 py-1 rounded ${
-                          size.isAvailable
-                            ? 'bg-green-500 hover:bg-green-600'
-                            : 'bg-red-500 hover:bg-red-600'
-                        }`}
+                        className={`px-2 py-1 rounded ${size.isAvailable
+                          ? 'bg-green-500 hover:bg-green-600'
+                          : 'bg-red-500 hover:bg-red-600'
+                          }`}
                         onClick={() => {
                           const newSizes = product.sizes.map(s =>
                             s.id === size.id
@@ -231,15 +230,6 @@ const Menu: React.FC = () => {
               </div>
 
               <div className="mt-4 flex justify-end space-x-2">
-                <button
-                  className="btn-secondary"
-                  onClick={() => handleUpdateProduct(product.id, {
-                    status: product.status === 'available' ? 'out_of_stock' : 'available'
-                  })}
-                >
-                  Toggle Status
-                </button>
-                <button className="btn-primary">Edit</button>
               </div>
             </div>
           </div>
