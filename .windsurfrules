@@ -1,0 +1,10 @@
+1. Speak to me in English
+2. This is a React/Redux application using Typescript
+4. Use TailwindCSS for UI
+5. Dont't modify any files or components that are not in feature I asked for to modify
+6. Don't add any new components/services that I am not asking for
+7. Don't use modals just add new Pages
+8. Always use the provided UI components
+9. Always try look for models like interface and types to based your code for components
+10. WHen creating an effect that calls an API, make sure the service returns a mocked object as of now
+11. If you need to persist data, use localStorage
