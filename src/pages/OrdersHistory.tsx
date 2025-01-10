@@ -29,7 +29,7 @@ const OrderStatusBadge: React.FC<{ status: Order['status'] }> = ({ status }) => 
 const Orders: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { orderHistory: orders, loading, error } = useSelector((state: RootState) => state.order);
-  const [filter, setFilter] = useState<'all' | 'active' | 'past'>('all');
+  const [filter, setFilter] = useState<OrderStatus | 'all'>('all');
 
   useEffect(() => {
     dispatch(getOrders());
@@ -54,22 +54,10 @@ const Orders: React.FC = () => {
   ];
 
   const filteredStatuses = statusOrder.filter(status => {
-    if (filter === 'active') {
-      return [
-        OrderStatus.CREATED,
-        OrderStatus.AUTHORIZED,
-        OrderStatus.PREPARING,
-        OrderStatus.READY
-      ].includes(status);
+    if (filter === 'all') {
+      return true;
     }
-    if (filter === 'past') {
-      return [
-        OrderStatus.SERVED,
-        OrderStatus.COMPLETED,
-        OrderStatus.CANCELLED
-      ].includes(status);
-    }
-    return true;
+    return status === filter;
   });
 
   if (loading) {
@@ -128,7 +116,7 @@ const Orders: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Orders</h1>
+        <h1 className="text-2xl font-bold">Orders History</h1>
         <div className="flex gap-2">
           <button
             onClick={() => setFilter('all')}
@@ -139,24 +127,18 @@ const Orders: React.FC = () => {
           >
             All
           </button>
-          <button
-            onClick={() => setFilter('active')}
-            className={`px-4 py-2 rounded ${filter === 'active'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-100 hover:bg-gray-200 text-black'
-            }`}
-          >
-            Active
-          </button>
-          <button
-            onClick={() => setFilter('past')}
-            className={`px-4 py-2 rounded ${filter === 'past'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-100 hover:bg-gray-200 text-black'
-            }`}
-          >
-            Past
-          </button>
+          {statusOrder.map(status => (
+            <button
+              key={status}
+              onClick={() => setFilter(status)}
+              className={`px-4 py-2 rounded ${filter === status
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 hover:bg-gray-200 text-black'
+              }`}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </button>
+          ))}
         </div>
       </div>
 

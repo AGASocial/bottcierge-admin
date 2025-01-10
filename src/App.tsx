@@ -7,7 +7,7 @@ import Auth from './pages/Auth';
 import Menu from './pages/Menu';
 import Tables from './pages/Tables';
 import Profile from './pages/Profile';
-import Orders from './pages/Orders';
+import Orders from './pages/OrdersHistory';
 import Payment from './pages/Payment';
 import Receipt from './pages/Receipt';
 import ProductDetails from './pages/ProductDetails';
