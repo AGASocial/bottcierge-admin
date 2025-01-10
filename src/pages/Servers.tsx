@@ -39,8 +39,8 @@ const Servers: React.FC = () => {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-xl font-bold">{server.name}</h3>
-            <p className="text-sm text-gray-400">{server.email}</p>
-            <p className="text-sm text-gray-400">{server.phone}</p>
+            <p className="text-sm text-gray-300">{server.email}</p>
+            <p className="text-sm text-gray-300">{server.phone}</p>
           </div>
           <div className="flex flex-col items-end relative">
             <button
@@ -58,9 +58,8 @@ const Servers: React.FC = () => {
                       handleStatusChange(server.id, status);
                       setIsOpen(false);
                     }}
-                    className={`w-full px-4 py-2 text-sm text-left text-white hover:bg-white/10 ${
-                      server.status === status ? 'bg-white/5' : ''
-                    }`}
+                    className={`w-full px-4 py-2 text-sm text-left text-white hover:bg-white/10 ${server.status === status ? 'bg-white/5' : ''
+                      }`}
                   >
                     {status}
                   </button>
@@ -76,7 +75,7 @@ const Servers: React.FC = () => {
             {server.sections.map((section) => (
               <span
                 key={section.id}
-                className="bg-electric-blue/20 text-electric-blue px-2 py-1 rounded text-sm"
+                className="bg-electric-blue/40 text-electric-white px-2 py-1 rounded text-sm"
                 title={section.description}
               >
                 {section.name}
@@ -89,15 +88,15 @@ const Servers: React.FC = () => {
           <h4 className="font-semibold mb-2">Performance Metrics</h4>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-gray-400">Orders Served</p>
+              <p className="text-sm text-gray-300">Orders Served</p>
               <p className="text-lg font-semibold">{server.metrics.ordersServed}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-400">Average Rating</p>
+              <p className="text-sm text-gray-300">Average Rating</p>
               <p className="text-lg font-semibold">{server.metrics.averageRating.toFixed(1)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-400">Total Sales</p>
+              <p className="text-sm text-gray-300">Total Sales</p>
               <p className="text-lg font-semibold">${server.metrics.totalSales.toFixed(2)}</p>
             </div>
           </div>
@@ -136,7 +135,7 @@ const Servers: React.FC = () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Server Management</h1>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {servers.map((server) => (
           <ServerCard key={server.id} server={server} />
