@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { TableCellsIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { 
+  TableCellsIcon, 
+  PlusIcon, 
+  PencilSquareIcon, 
+  TrashIcon,
+  ExclamationTriangleIcon
+} from '@heroicons/react/24/outline';
+import Dialog from '../components/common/Dialog';
 import type { RootState } from '../store';
 import type { Table } from '../types';
 
@@ -14,6 +21,7 @@ const SECTION_NAMES: Record<string, string> = {
 const TableManagement: React.FC = () => {
   const navigate = useNavigate();
   const { currentVenue } = useSelector((state: RootState) => state.venue);
+  const [tableToDelete, setTableToDelete] = useState<Table | null>(null);
 
   const tablesBySection = currentVenue?.tables.reduce((acc: Record<string, Table[]>, table) => {
     if (!acc[table.sectionId]) {
@@ -22,6 +30,22 @@ const TableManagement: React.FC = () => {
     acc[table.sectionId].push(table);
     return acc;
   }, {}) || {};
+
+  const handleEdit = (tableId: string) => {
+    navigate(`/profile/tables/edit/${tableId}`);
+  };
+
+  const handleDelete = (table: Table) => {
+    setTableToDelete(table);
+  };
+
+  const confirmDelete = () => {
+    if (tableToDelete) {
+      // TODO: Implement delete table action
+      console.log('Deleting table:', tableToDelete.id);
+      setTableToDelete(null);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -63,6 +87,22 @@ const TableManagement: React.FC = () => {
                       <p>Shape: {table.shape}</p>
                       <p>Minimum Spend: ${table.minimumSpend}</p>
                     </div>
+                    <div className="flex justify-end space-x-2 mt-4">
+                      <button
+                        onClick={() => handleEdit(table.id)}
+                        className="p-2 text-gray-400 hover:text-electric-blue transition-colors"
+                        title="Edit table"
+                      >
+                        <PencilSquareIcon className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(table)}
+                        className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                        title="Delete table"
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -70,6 +110,16 @@ const TableManagement: React.FC = () => {
           ))}
         </div>
       </div>
+
+      <Dialog
+        isOpen={!!tableToDelete}
+        onClose={() => setTableToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Delete Table"
+        message={`Are you sure you want to delete Table ${tableToDelete?.number}? This action cannot be undone.`}
+        confirmText="Delete"
+        type="error"
+      />
     </div>
   );
 };

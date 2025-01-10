@@ -52,6 +52,7 @@ function App() {
           <Route path="profile/hours" element={<OperatingHours />} />
           <Route path="profile/tables" element={<TableManagement />} />
           <Route path="profile/tables/add" element={<AddTable />} />
+          <Route path="profile/tables/edit/:tableId" element={<AddTable />} />
           <Route path="orders" element={<Orders />} />
           <Route path="payment" element={<Payment />} />
           <Route path="receipt" element={<Receipt />} />

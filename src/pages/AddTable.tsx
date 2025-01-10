@@ -1,7 +1,9 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { TableCellsIcon } from '@heroicons/react/24/outline';
 import type { Table } from '../types';
+import type { RootState } from '../store';
 
 const SECTIONS = [
   { id: 'main_floor', name: 'Main Floor' },
@@ -13,13 +15,28 @@ const SHAPES = ['round', 'square', 'rectangle'] as const;
 
 const AddTable: React.FC = () => {
   const navigate = useNavigate();
+  const { tableId } = useParams();
+  const { currentVenue } = useSelector((state: RootState) => state.venue);
+  const [initialValues, setInitialValues] = useState<Partial<Table> | null>(null);
+
+  useEffect(() => {
+    if (tableId && currentVenue) {
+      const table = currentVenue.tables.find(t => t.id === tableId);
+      if (table) {
+        setInitialValues(table);
+      } else {
+        // If table not found, redirect to tables list
+        navigate('/profile/tables');
+      }
+    }
+  }, [tableId, currentVenue, navigate]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const newTable: Table = {
-      id: Math.random().toString(36).substring(7).toUpperCase(),
+    const tableData: Partial<Table> = {
+      id: tableId || Math.random().toString(36).substring(7).toUpperCase(),
       number: formData.get('number') as string,
       capacity: Number(formData.get('capacity')),
       sectionId: formData.get('section') as string,
@@ -32,8 +49,8 @@ const AddTable: React.FC = () => {
       status: 'available',
     };
 
-    // TODO: Add table to venue state
-    console.log('New table:', newTable);
+    // TODO: Implement save/update table action
+    console.log(tableId ? 'Updating table:' : 'Adding table:', tableData);
     navigate('/profile/tables');
   };
 
@@ -46,7 +63,7 @@ const AddTable: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center space-x-4 mb-8">
           <TableCellsIcon className="w-8 h-8" />
-          <h1 className="text-2xl font-bold">Add New Table</h1>
+          <h1 className="text-2xl font-bold">{tableId ? 'Edit Table' : 'Add New Table'}</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -58,10 +75,10 @@ const AddTable: React.FC = () => {
                   Table Number
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="number"
                   name="number"
-                  min="1"
+                  defaultValue={initialValues?.number || ''}
                   required
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                 />
@@ -77,6 +94,7 @@ const AddTable: React.FC = () => {
                   id="capacity"
                   name="capacity"
                   min="1"
+                  defaultValue={initialValues?.capacity || ''}
                   required
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                 />
@@ -90,6 +108,7 @@ const AddTable: React.FC = () => {
                 <select
                   id="section"
                   name="section"
+                  defaultValue={initialValues?.sectionId || ''}
                   required
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                 >
@@ -109,6 +128,7 @@ const AddTable: React.FC = () => {
                 <select
                   id="shape"
                   name="shape"
+                  defaultValue={initialValues?.shape || ''}
                   required
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                 >
@@ -130,7 +150,7 @@ const AddTable: React.FC = () => {
                   id="minimumSpend"
                   name="minimumSpend"
                   min="0"
-                  defaultValue="100"
+                  defaultValue={initialValues?.minimumSpend || '100'}
                   required
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                 />
@@ -151,7 +171,7 @@ const AddTable: React.FC = () => {
               type="submit"
               className="px-6 py-2.5 bg-electric-blue text-white rounded-lg hover:bg-electric-blue/90 transition-colors"
             >
-              Add Table
+              {tableId ? 'Save Changes' : 'Add Table'}
             </button>
           </div>
         </form>

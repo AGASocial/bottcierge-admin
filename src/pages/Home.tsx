@@ -4,6 +4,8 @@ import { RootState } from '../store';
 import { Order, OrderStatus } from '../types';
 import { fetchOrders, updateOrderStatus } from '../store/slices/orderSlice';
 import type { AppDispatch } from '../store';
+import Dialog from '../components/common/Dialog';
+import Badge from '../components/common/Badge'; // Import Badge component
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -57,14 +59,23 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleCancelOrder = async (orderId: string, orderNumber: string) => {
-    const isConfirmed = window.confirm(`Are you sure you want to cancel Order #${orderNumber}? This action cannot be undone.`);
-    
-    if (isConfirmed) {
+  const [orderToCancel, setOrderToCancel] = useState<{ id: string; number: string } | null>(null);
+
+  const handleCancelOrder = (orderId: string, orderNumber: string) => {
+    setOrderToCancel({ id: orderId, number: orderNumber });
+  };
+
+  const confirmCancelOrder = async () => {
+    if (orderToCancel) {
       try {
-        await dispatch(updateOrderStatus({ orderId, status: OrderStatus.CANCELLED })).unwrap();
+        await dispatch(updateOrderStatus({ 
+          orderId: orderToCancel.id, 
+          status: OrderStatus.CANCELLED 
+        })).unwrap();
       } catch (error) {
         console.error('Failed to cancel order:', error);
+      } finally {
+        setOrderToCancel(null);
       }
     }
   };
@@ -155,12 +166,43 @@ const Home: React.FC = () => {
     );
   }
 
+  const createdOrders = filteredOrders[OrderStatus.CREATED] || [];
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Order Management</h1>
       <div className="space-y-8">
+        {/* Created Orders Section */}
+        <div>
+          <h2 className="text-xl font-bold mb-4 flex items-center">
+            New Orders
+            {createdOrders.length > 0 && (
+              <Badge
+                count={createdOrders.length}
+                variant="error"
+                className="ml-2 animate-pulse"
+              />
+            )}
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {createdOrders.map((order) => (
+              <div
+                key={order.id}
+                className="glass-card p-4 relative overflow-hidden group"
+              >
+                {/* Blinking indicator */}
+                <div className="absolute inset-0 bg-electric-blue/10 animate-pulse-slow pointer-events-none" />
+                
+                {/* Order content */}
+                <OrderCard order={order} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Other Orders Section */}
         {statusOrder
-          .filter(status => status !== OrderStatus.COMPLETED && status !== OrderStatus.CANCELLED)
+          .filter(status => status !== OrderStatus.CREATED && status !== OrderStatus.COMPLETED && status !== OrderStatus.CANCELLED)
           .map(status => {
             const orders = filteredOrders[status] || [];
             return (
@@ -184,6 +226,15 @@ const Home: React.FC = () => {
             );
           })}
       </div>
+      <Dialog
+        isOpen={!!orderToCancel}
+        onClose={() => setOrderToCancel(null)}
+        onConfirm={confirmCancelOrder}
+        title="Cancel Order"
+        message={`Are you sure you want to cancel Order #${orderToCancel?.number}? This action cannot be undone.`}
+        confirmText="Cancel Order"
+        type="error"
+      />
     </div>
   );
 };
