@@ -191,6 +191,7 @@ export interface Table {
   y: number;
   capacity: number;
   sectionId: string;
+  minimumSpend: number;
   notes?: string;
   shape: 'round' | 'square' | 'rectangle';
   width: number;
@@ -207,6 +208,12 @@ export interface Venue {
   email?: string;
   phone?: string;
   location?: VenueLocation;
+  website?: string;
+  socialMedia?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+  };
   operatingHours?: OperatingHours[];
   pricingRules?: PricingRule[];
   events?: VenueEvent[];

@@ -79,7 +79,8 @@ const generateRandomVenue = (tableId: string): Venue => {
         sectionId: 'main_floor',
         shape: 'square',
         width: 100,
-        height: 100
+        height: 100,
+        minimumSpend: 2000
       },
       {
         id: 'table_2',
@@ -91,7 +92,8 @@ const generateRandomVenue = (tableId: string): Venue => {
         sectionId: 'main_floor',
         shape: 'round',
         width: 80,
-        height: 80
+        height: 80,
+        minimumSpend: 2000
       },
       {
         id: 'table_3',
@@ -103,7 +105,8 @@ const generateRandomVenue = (tableId: string): Venue => {
         sectionId: 'main_floor',
         shape: 'rectangle',
         width: 150,
-        height: 100
+        height: 100,
+        minimumSpend: 2000
       },
       // Bar Section
       {
@@ -116,7 +119,8 @@ const generateRandomVenue = (tableId: string): Venue => {
         sectionId: 'bar',
         shape: 'square',
         width: 60,
-        height: 60
+        height: 60,
+        minimumSpend: 500
       },
       {
         id: 'table_5',
@@ -128,7 +132,8 @@ const generateRandomVenue = (tableId: string): Venue => {
         sectionId: 'bar',
         shape: 'square',
         width: 60,
-        height: 60
+        height: 60,
+        minimumSpend: 500
       },
       // Patio Section
       {
@@ -141,7 +146,8 @@ const generateRandomVenue = (tableId: string): Venue => {
         sectionId: 'patio',
         shape: 'round',
         width: 100,
-        height: 100
+        height: 100,
+        minimumSpend: 1000
       },
       {
         id: 'table_7',
@@ -153,9 +159,19 @@ const generateRandomVenue = (tableId: string): Venue => {
         sectionId: 'patio',
         shape: 'rectangle',
         width: 200,
-        height: 100
+        height: 100,
+        minimumSpend: 1000
       }
-    ]
+    ],
+    phone: "123-456-7890",
+    email: "gqT5K@example.com",
+    website: "https://example.com",
+    socialMedia: {
+      facebook: "https://www.facebook.com/yourpage",
+      instagram: "https://www.instagram.com/yourpage",
+      twitter: "https://twitter.com/yourpage",
+    },
+
   };
 };
 
@@ -193,13 +209,13 @@ export const fetchVenueDetails = createAsyncThunk(
 
 export const updateStaffStatus = createAsyncThunk(
   'venue/updateStaffStatus',
-  async ({ 
-    staffId, 
-    status, 
-    sectionId 
-  }: { 
-    staffId: string; 
-    status: Staff['status']; 
+  async ({
+    staffId,
+    status,
+    sectionId
+  }: {
+    staffId: string;
+    status: Staff['status'];
     sectionId?: string;
   }, { rejectWithValue }) => {
     try {
@@ -228,11 +244,11 @@ export const fetchVenueMetrics = createAsyncThunk(
 
 export const updatePricingRule = createAsyncThunk(
   'venue/updatePricingRule',
-  async ({ 
-    ruleId, 
-    updates 
-  }: { 
-    ruleId: string; 
+  async ({
+    ruleId,
+    updates
+  }: {
+    ruleId: string;
     updates: Partial<PricingRule>;
   }, { rejectWithValue }) => {
     try {

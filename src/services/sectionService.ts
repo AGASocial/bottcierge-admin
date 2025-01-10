@@ -20,6 +20,7 @@ const mockSections: Section[] = [
         shape: 'round',
         width: 100,
         height: 100,
+        minimumSpend: 1000,
       },
     ],
     position: {

@@ -72,6 +72,7 @@ const Tables: React.FC = () => {
                   <p>Capacity: {table.capacity} people</p>
                   <p>Shape: {table.shape}</p>
                   <p>Size: {table.width}x{table.height}</p>
+                  <p>Minimum Spend: ${table.minimumSpend}</p>
                 </div>
               </div>
             ))}

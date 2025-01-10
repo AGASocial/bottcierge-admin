@@ -84,6 +84,7 @@ const Sections: React.FC = () => {
       shape: 'round',
       width: 80,
       height: 80,
+      minimumSpend: 1000,
     };
 
     const section = sections.find((s) => s.id === sectionId);

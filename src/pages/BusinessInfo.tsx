@@ -102,6 +102,73 @@ const BusinessInfo: React.FC = () => {
                   required
                 />
               </div>
+
+              {/* Website*/}
+              <div>
+                <label htmlFor="website" className="block text-sm font-medium text-gray-300 mb-2">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  id="website"
+                  name="website"
+                  defaultValue={currentVenue?.website || ''}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
+                />
+              </div>
+
+              {/* Social Media */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-4">
+                  Social Media
+                </label>
+                <div className="space-y-4">
+                  {/* Facebook */}
+                  <div>
+                    <label htmlFor="facebook" className="block text-sm text-gray-400 mb-2">
+                      Facebook URL
+                    </label>
+                    <input
+                      type="url"
+                      id="facebook"
+                      name="facebook"
+                      defaultValue={currentVenue?.socialMedia?.facebook || ''}
+                      placeholder="https://www.facebook.com/yourpage"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
+                    />
+                  </div>
+
+                  {/* Instagram */}
+                  <div>
+                    <label htmlFor="instagram" className="block text-sm text-gray-400 mb-2">
+                      Instagram URL
+                    </label>
+                    <input
+                      type="url"
+                      id="instagram"
+                      name="instagram"
+                      defaultValue={currentVenue?.socialMedia?.instagram || ''}
+                      placeholder="https://www.instagram.com/yourpage"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
+                    />
+                  </div>
+
+                  {/* Twitter */}
+                  <div>
+                    <label htmlFor="twitter" className="block text-sm text-gray-400 mb-2">
+                      Twitter URL
+                    </label>
+                    <input
+                      type="url"
+                      id="twitter"
+                      name="twitter"
+                      defaultValue={currentVenue?.socialMedia?.twitter || ''}
+                      placeholder="https://twitter.com/yourpage"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
