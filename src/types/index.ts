@@ -204,6 +204,20 @@ export interface Venue {
   description: string;
   image?: string;
   tables: Table[];
+  email?: string;
+  phone?: string;
+  location?: VenueLocation;
+  operatingHours?: OperatingHours[];
+  pricingRules?: PricingRule[];
+  events?: VenueEvent[];
+  staff?: Staff[];
+  tableReservations?: TableReservation[];
+  reservationHistory?: ReservationHistory[];
+  paymentMethods?: PaymentMethod[];
+  favorites?: Favorite[];
+  orders?: Order[];
+  products?: Product[];
+  productCustomizations?: ProductCustomization[];
 }
 
 export interface VenueLocation {

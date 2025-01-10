@@ -12,6 +12,7 @@ import Payment from './pages/Payment';
 import Receipt from './pages/Receipt';
 import ProductDetails from './pages/ProductDetails';
 import Servers from './pages/Servers';
+import BusinessInfo from './pages/BusinessInfo';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { getCurrentUser } from './store/slices/authSlice';
 import { setRandomVenue } from './store/slices/venueSlice';
@@ -44,6 +45,7 @@ function App() {
           <Route path="menu/:productId" element={<ProductDetails />} />
           <Route path="tables" element={<Tables />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="profile/business-info" element={<BusinessInfo />} />
           <Route path="orders" element={<Orders />} />
           <Route path="payment" element={<Payment />} />
           <Route path="receipt" element={<Receipt />} />

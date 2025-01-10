@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
   UserCircleIcon,
   CogIcon,
@@ -10,6 +11,7 @@ import type { RootState } from '../store';
 
 const Profile: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
+  const navigate = useNavigate();
 
   if (!user) {
     return <div>Loading...</div>;
@@ -64,7 +66,10 @@ const Profile: React.FC = () => {
             <BuildingStorefrontIcon className="w-6 h-6" />
           </div>
           <div className="space-y-4">
-            <button className="w-full text-left py-2 hover:text-electric-blue transition-colors">
+            <button 
+              onClick={() => navigate('/profile/business-info')}
+              className="w-full text-left py-2 hover:text-electric-blue transition-colors"
+            >
               Business Information
             </button>
             <button className="w-full text-left py-2 hover:text-electric-blue transition-colors">
