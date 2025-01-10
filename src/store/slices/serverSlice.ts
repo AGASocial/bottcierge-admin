@@ -85,10 +85,9 @@ const serverSlice = createSlice({
       })
       .addCase(updateServer.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.servers.findIndex(server => server.id === action.payload.id);
-        if (index !== -1) {
-          state.servers[index] = action.payload;
-        }
+        state.servers = state.servers.map(server =>
+          server.id === action.payload.id ? action.payload : server
+        );
       })
       .addCase(updateServer.rejected, (state, action) => {
         state.loading = false;
@@ -101,10 +100,9 @@ const serverSlice = createSlice({
       })
       .addCase(updateServerStatus.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.servers.findIndex(server => server.id === action.payload.id);
-        if (index !== -1) {
-          state.servers[index] = action.payload;
-        }
+        state.servers = state.servers.map(server =>
+          server.id === action.payload.id ? action.payload : server
+        );
       })
       .addCase(updateServerStatus.rejected, (state, action) => {
         state.loading = false;

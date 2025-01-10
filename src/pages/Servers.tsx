@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Server, ServerStatus } from '../types';
@@ -31,73 +31,87 @@ const Servers: React.FC = () => {
     }
   };
 
-  const ServerCard: React.FC<{ server: Server }> = ({ server }) => (
-    <div className="glass-card p-6 space-y-4">
-      <div className="flex justify-between items-start">
-        <div>
-          <h3 className="text-xl font-bold">{server.name}</h3>
-          <p className="text-sm text-gray-400">{server.email}</p>
-          <p className="text-sm text-gray-400">{server.phone}</p>
-        </div>
-        <div className="flex flex-col items-end">
-          <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(server.status)} text-white`}>
-            {server.status}
-          </span>
-          <select
-            value={server.status}
-            onChange={(e) => handleStatusChange(server.id, e.target.value as ServerStatus)}
-            className="mt-2 bg-deep-purple text-white border border-white/20 rounded px-2 py-1 text-sm"
-          >
-            {Object.values(ServerStatus).map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+  const ServerCard: React.FC<{ server: Server }> = ({ server }) => {
+    const [isOpen, setIsOpen] = React.useState(false);
 
-      <div className="border-t border-white/10 pt-4">
-        <h4 className="font-semibold mb-2">Assigned Sections</h4>
-        <div className="flex flex-wrap gap-2">
-          {server.sections.map((section) => (
-            <span
-              key={section.id}
-              className="bg-electric-blue/20 text-electric-blue px-2 py-1 rounded text-sm"
-              title={section.description}
+    return (
+      <div className="glass-card p-6 space-y-4">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="text-xl font-bold">{server.name}</h3>
+            <p className="text-sm text-gray-400">{server.email}</p>
+            <p className="text-sm text-gray-400">{server.phone}</p>
+          </div>
+          <div className="flex flex-col items-end relative">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={`px-3 py-1 rounded-full text-sm ${getStatusColor(server.status)} text-white hover:opacity-90 transition-opacity`}
             >
-              {section.name}
-            </span>
-          ))}
+              {server.status}
+            </button>
+            {isOpen && (
+              <div className="absolute top-8 right-0 z-10 w-48 py-1 bg-deep-purple border border-white/20 rounded-lg shadow-lg">
+                {Object.values(ServerStatus).map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => {
+                      handleStatusChange(server.id, status);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full px-4 py-2 text-sm text-left text-white hover:bg-white/10 ${
+                      server.status === status ? 'bg-white/5' : ''
+                    }`}
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-4">
+          <h4 className="font-semibold mb-2">Assigned Sections</h4>
+          <div className="flex flex-wrap gap-2">
+            {server.sections.map((section) => (
+              <span
+                key={section.id}
+                className="bg-electric-blue/20 text-electric-blue px-2 py-1 rounded text-sm"
+                title={section.description}
+              >
+                {section.name}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-4">
+          <h4 className="font-semibold mb-2">Performance Metrics</h4>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <p className="text-sm text-gray-400">Orders Served</p>
+              <p className="text-lg font-semibold">{server.metrics.ordersServed}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-400">Average Rating</p>
+              <p className="text-lg font-semibold">{server.metrics.averageRating.toFixed(1)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-400">Total Sales</p>
+              <p className="text-lg font-semibold">${server.metrics.totalSales.toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-4">
+          <h4 className="font-semibold mb-2">Schedule</h4>
+          <p className="text-sm">
+            {server.schedule.start} - {server.schedule.end}
+          </p>
         </div>
       </div>
-
-      <div className="border-t border-white/10 pt-4">
-        <h4 className="font-semibold mb-2">Performance Metrics</h4>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <p className="text-sm text-gray-400">Orders Served</p>
-            <p className="text-lg font-semibold">{server.metrics.ordersServed}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-400">Average Rating</p>
-            <p className="text-lg font-semibold">{server.metrics.averageRating.toFixed(1)}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-400">Total Sales</p>
-            <p className="text-lg font-semibold">${server.metrics.totalSales.toFixed(2)}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10 pt-4">
-        <h4 className="font-semibold mb-2">Schedule</h4>
-        <p className="text-sm">
-          {server.schedule.start} - {server.schedule.end}
-        </p>
-      </div>
-    </div>
-  );
+    );
+  };
 
   if (loading) {
     return (

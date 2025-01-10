@@ -1,6 +1,6 @@
 import { Server, ServerStatus } from '../types';
 
-const mockServers: Server[] = [
+let mockServers: Server[] = [
   {
     id: '1',
     name: 'John Smith',
@@ -111,13 +111,17 @@ export const serverService = {
     const index = mockServers.findIndex(s => s.id === serverId);
     if (index === -1) throw new Error('Server not found');
     
-    mockServers[index] = {
+    const updatedServer = {
       ...mockServers[index],
       ...data,
       updatedAt: new Date().toISOString()
     };
     
-    return mockServers[index];
+    mockServers = mockServers.map(server => 
+      server.id === serverId ? updatedServer : server
+    );
+    
+    return updatedServer;
   },
 
   // Update server status
@@ -126,12 +130,16 @@ export const serverService = {
     const index = mockServers.findIndex(s => s.id === serverId);
     if (index === -1) throw new Error('Server not found');
     
-    mockServers[index] = {
+    const updatedServer = {
       ...mockServers[index],
       status,
       updatedAt: new Date().toISOString()
     };
     
-    return mockServers[index];
+    mockServers = mockServers.map(server => 
+      server.id === serverId ? updatedServer : server
+    );
+    
+    return updatedServer;
   }
 };
