@@ -13,6 +13,7 @@ import Receipt from './pages/Receipt';
 import ProductDetails from './pages/ProductDetails';
 import Servers from './pages/Servers';
 import BusinessInfo from './pages/BusinessInfo';
+import OperatingHours from './pages/OperatingHours';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { getCurrentUser } from './store/slices/authSlice';
 import { setRandomVenue } from './store/slices/venueSlice';
@@ -46,6 +47,7 @@ function App() {
           <Route path="tables" element={<Tables />} />
           <Route path="profile" element={<Profile />} />
           <Route path="profile/business-info" element={<BusinessInfo />} />
+          <Route path="profile/hours" element={<OperatingHours />} />
           <Route path="orders" element={<Orders />} />
           <Route path="payment" element={<Payment />} />
           <Route path="receipt" element={<Receipt />} />

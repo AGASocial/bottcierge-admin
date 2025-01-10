@@ -72,7 +72,10 @@ const Profile: React.FC = () => {
             >
               Business Information
             </button>
-            <button className="w-full text-left py-2 hover:text-electric-blue transition-colors">
+            <button 
+              onClick={() => navigate('/profile/hours')}
+              className="w-full text-left py-2 hover:text-electric-blue transition-colors"
+            >
               Operating Hours
             </button>
             <button className="w-full text-left py-2 hover:text-electric-blue transition-colors">

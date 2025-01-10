@@ -232,7 +232,7 @@ export interface VenueLocation {
 }
 
 export interface OperatingHours {
-  dayOfWeek: number;
+  dayOfWeek: string;
   open: string;
   close: string;
   isOpen: boolean;
