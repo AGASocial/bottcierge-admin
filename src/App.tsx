@@ -5,8 +5,7 @@ import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Menu from './pages/Menu';
-import Table from './pages/Table';
-import TableScan from './pages/TableScan';
+import Tables from './pages/Tables';
 import Profile from './pages/Profile';
 import Orders from './pages/Orders';
 import Payment from './pages/Payment';
@@ -15,6 +14,7 @@ import ProductDetails from './pages/ProductDetails';
 import Servers from './pages/Servers';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { getCurrentUser } from './store/slices/authSlice';
+import { setRandomVenue } from './store/slices/venueSlice';
 import type { AppDispatch } from './store';
 
 function App() {
@@ -25,6 +25,8 @@ function App() {
     if (token) {
       dispatch(getCurrentUser());
     }
+    // Initialize venue with mock data
+    dispatch(setRandomVenue('default'));
   }, [dispatch]);
 
   return (
@@ -40,8 +42,7 @@ function App() {
           <Route path="login" element={<Navigate to="/auth" replace />} />
           <Route path="menu" element={<Menu />} />
           <Route path="menu/:productId" element={<ProductDetails />} />
-          <Route path="table/scan" element={<TableScan />} />
-          <Route path="table/:tableId" element={<Table />} />
+          <Route path="tables" element={<Tables />} />
           <Route path="profile" element={<Profile />} />
           <Route path="orders" element={<Orders />} />
           <Route path="payment" element={<Payment />} />

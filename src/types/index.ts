@@ -171,6 +171,16 @@ export interface Brand {
 export interface Section {
   id: string;
   name: string;
+  description?: string;
+  type: 'VIP' | 'DANCE_FLOOR' | 'BAR' | 'GENERAL';
+  isActive: boolean;
+  tables: Table[];
+  position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 }
 
 export interface Table {
@@ -180,6 +190,11 @@ export interface Table {
   x: number;
   y: number;
   capacity: number;
+  sectionId: string;
+  notes?: string;
+  shape: 'round' | 'square' | 'rectangle';
+  width: number;
+  height: number;
 }
 
 export interface Venue {

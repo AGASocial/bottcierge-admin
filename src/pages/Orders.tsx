@@ -29,7 +29,7 @@ const OrderStatusBadge: React.FC<{ status: Order['status'] }> = ({ status }) => 
 const Orders: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { orderHistory: orders, loading, error } = useSelector((state: RootState) => state.order);
-  const [filter, setFilter] = useState<'all' | 'active' | 'past'>('active');
+  const [filter, setFilter] = useState<'all' | 'active' | 'past'>('all');
 
   useEffect(() => {
     dispatch(getOrders());

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
-  HomeIcon,
   QrCodeIcon,
   UserCircleIcon,
-  ClipboardDocumentListIcon,
   UsersIcon,
+  TableCellsIcon,
+  RectangleGroupIcon,
+  QueueListIcon,
+  ArchiveBoxIcon
 } from '@heroicons/react/24/outline';
 
 const Layout: React.FC = () => {
@@ -28,49 +30,54 @@ const Layout: React.FC = () => {
           <div className="flex justify-around py-4">
             <Link
               to="/"
-              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${
-                isActive('/') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
-              }`}
+              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive('/') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
+                }`}
             >
-              <HomeIcon className="w-6 h-6" />
-              <span className="text-xs font-medium">Home</span>
-            </Link>
-
-            <Link
-              to="/menu"
-              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${
-                isActive('/menu') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
-              }`}
-            >
-              <QrCodeIcon className="w-6 h-6" />
-              <span className="text-xs font-medium">Menu</span>
-            </Link>
-
-            <Link
-              to="/orders"
-              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${
-                isActive('/orders') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
-              }`}
-            >
-              <ClipboardDocumentListIcon className="w-6 h-6" />
+              <RectangleGroupIcon className="w-6 h-6" />
               <span className="text-xs font-medium">Orders</span>
             </Link>
 
             <Link
+              to="/tables"
+              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive('/tables') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
+                }`}
+            >
+              <TableCellsIcon className="w-6 h-6" />
+              <span className="text-xs font-medium">Tables</span>
+            </Link>
+
+            <Link
               to="/servers"
-              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${
-                isActive('/servers') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
-              }`}
+              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive('/servers') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
+                }`}
             >
               <UsersIcon className="w-6 h-6" />
               <span className="text-xs font-medium">Servers</span>
             </Link>
 
             <Link
+              to="/menu"
+              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive('/menu') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
+                }`}
+            >
+              <QueueListIcon className="w-6 h-6" />
+              <span className="text-xs font-medium">Menu</span>
+            </Link>
+
+            <Link
+              to="/orders"
+              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive('/orders') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
+                }`}
+            >
+              <ArchiveBoxIcon className="w-6 h-6" />
+              <span className="text-xs font-medium">History</span>
+            </Link>
+
+
+            <Link
               to="/profile"
-              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${
-                isActive('/profile') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
-              }`}
+              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive('/profile') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
+                }`}
             >
               <UserCircleIcon className="w-6 h-6" />
               <span className="text-xs font-medium">Profile</span>

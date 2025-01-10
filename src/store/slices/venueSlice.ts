@@ -67,22 +67,102 @@ const generateRandomVenue = (tableId: string): Venue => {
     name: randomName,
     address: "123 Main Street",
     description: "A cozy spot for food and drinks",
-    tables: [{
-      id: tableId,
-      number: tableId,
-      status: 'available',
-      capacity: 4,
-      x: 0,
-      y: 0
-    }]
+    tables: [
+      // Main Floor Section
+      {
+        id: 'table_1',
+        number: '101',
+        status: 'available',
+        capacity: 4,
+        x: 0,
+        y: 0,
+        sectionId: 'main_floor',
+        shape: 'square',
+        width: 100,
+        height: 100
+      },
+      {
+        id: 'table_2',
+        number: '102',
+        status: 'occupied',
+        capacity: 2,
+        x: 120,
+        y: 0,
+        sectionId: 'main_floor',
+        shape: 'round',
+        width: 80,
+        height: 80
+      },
+      {
+        id: 'table_3',
+        number: '103',
+        status: 'reserved',
+        capacity: 6,
+        x: 240,
+        y: 0,
+        sectionId: 'main_floor',
+        shape: 'rectangle',
+        width: 150,
+        height: 100
+      },
+      // Bar Section
+      {
+        id: 'table_4',
+        number: 'B1',
+        status: 'available',
+        capacity: 2,
+        x: 0,
+        y: 120,
+        sectionId: 'bar',
+        shape: 'square',
+        width: 60,
+        height: 60
+      },
+      {
+        id: 'table_5',
+        number: 'B2',
+        status: 'occupied',
+        capacity: 2,
+        x: 70,
+        y: 120,
+        sectionId: 'bar',
+        shape: 'square',
+        width: 60,
+        height: 60
+      },
+      // Patio Section
+      {
+        id: 'table_6',
+        number: 'P1',
+        status: 'available',
+        capacity: 4,
+        x: 0,
+        y: 240,
+        sectionId: 'patio',
+        shape: 'round',
+        width: 100,
+        height: 100
+      },
+      {
+        id: 'table_7',
+        number: 'P2',
+        status: 'reserved',
+        capacity: 8,
+        x: 120,
+        y: 240,
+        sectionId: 'patio',
+        shape: 'rectangle',
+        width: 200,
+        height: 100
+      }
+    ]
   };
 };
 
 export const setRandomVenue = createAsyncThunk(
   'venue/setRandomVenue',
   async (tableId: string) => {
-    const venue = generateRandomVenue(tableId);
-    return venue;
+    return generateRandomVenue(tableId);
   }
 );
 
@@ -178,6 +258,18 @@ const venueSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(setRandomVenue.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(setRandomVenue.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentVenue = action.payload;
+      })
+      .addCase(setRandomVenue.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to set venue';
+      })
       .addCase(fetchVenueDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -208,9 +300,6 @@ const venueSlice = createSlice({
         if (ruleIndex !== -1) {
           state.pricingRules[ruleIndex] = action.payload;
         }
-      })
-      .addCase(setRandomVenue.fulfilled, (state, action) => {
-        state.currentVenue = action.payload;
       });
   },
 });

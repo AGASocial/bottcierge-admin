@@ -5,6 +5,7 @@ import menuReducer from './slices/menuSlice';
 import tableReducer from './slices/tableSlice';
 import venueReducer from './slices/venueSlice';
 import serverReducer from './slices/serverSlice';
+import sectionReducer from './slices/sectionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     table: tableReducer,
     venue: venueReducer,
     server: serverReducer,
+    sections: sectionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
