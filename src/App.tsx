@@ -12,6 +12,7 @@ import Orders from './pages/Orders';
 import Payment from './pages/Payment';
 import Receipt from './pages/Receipt';
 import ProductDetails from './pages/ProductDetails';
+import Servers from './pages/Servers';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { getCurrentUser } from './store/slices/authSlice';
 import type { AppDispatch } from './store';
@@ -45,6 +46,7 @@ function App() {
           <Route path="orders" element={<Orders />} />
           <Route path="payment" element={<Payment />} />
           <Route path="receipt" element={<Receipt />} />
+          <Route path="servers" element={<Servers />} />
         </Route>
       </Routes>
     </div>

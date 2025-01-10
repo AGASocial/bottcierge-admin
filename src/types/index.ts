@@ -97,7 +97,55 @@ export interface Product {
     name: string;
     currentPrice: number;
     isAvailable: boolean;
-  }[];
+  }[]
+}
+
+export interface ProductCustomization {
+  id: string;
+  name: string;
+  type: string;
+  options: string[];
+}
+
+export enum ServerStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  ON_BREAK = 'ON_BREAK',
+  OFF_DUTY = 'OFF_DUTY'
+}
+
+export interface ServerSection {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface ServerMetrics {
+  ordersServed: number;
+  averageRating: number;
+  totalSales: number;
+  lastMonthPerformance: {
+    ordersServed: number;
+    averageRating: number;
+    totalSales: number;
+  };
+}
+
+export interface Server {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: ServerStatus;
+  sections: ServerSection[];
+  metrics: ServerMetrics;
+  startDate: string;
+  schedule: {
+    start: string;
+    end: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MenuCategory {

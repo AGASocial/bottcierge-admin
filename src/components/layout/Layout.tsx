@@ -5,6 +5,7 @@ import {
   QrCodeIcon,
   UserCircleIcon,
   ClipboardDocumentListIcon,
+  UsersIcon,
 } from '@heroicons/react/24/outline';
 
 const Layout: React.FC = () => {
@@ -53,6 +54,16 @@ const Layout: React.FC = () => {
             >
               <ClipboardDocumentListIcon className="w-6 h-6" />
               <span className="text-xs font-medium">Orders</span>
+            </Link>
+
+            <Link
+              to="/servers"
+              className={`flex flex-col items-center space-y-1 transition-colors duration-200 ${
+                isActive('/servers') ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
+              }`}
+            >
+              <UsersIcon className="w-6 h-6" />
+              <span className="text-xs font-medium">Servers</span>
             </Link>
 
             <Link

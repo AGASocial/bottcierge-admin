@@ -4,6 +4,7 @@ import orderReducer from './slices/orderSlice';
 import menuReducer from './slices/menuSlice';
 import tableReducer from './slices/tableSlice';
 import venueReducer from './slices/venueSlice';
+import serverReducer from './slices/serverSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     menu: menuReducer,
     table: tableReducer,
     venue: venueReducer,
+    server: serverReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
