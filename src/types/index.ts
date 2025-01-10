@@ -38,7 +38,7 @@ export interface OrderItem {
   size: string;
   sizeId: string;
   customizations: Record<string, string | string[]>;
-  status: 'pending' | 'preparing' | 'ready' | 'delivered';
+  status: OrderStatus;
 }
 
 export enum OrderStatus {
@@ -57,10 +57,22 @@ export interface Order {
   userId: string;
   tableId: string;
   items: OrderItem[];
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'paid';
+  status: OrderStatus;
   total: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  size: string;
+  sizeId: string;
+  customizations: Record<string, string | string[]>;
+  status: OrderStatus;
 }
 
 export interface Product {

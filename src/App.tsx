@@ -5,7 +5,6 @@ import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Menu from './pages/Menu';
-import Cart from './pages/Cart';
 import Table from './pages/Table';
 import TableScan from './pages/TableScan';
 import Profile from './pages/Profile';
@@ -30,17 +29,16 @@ function App() {
   return (
     <div className="min-h-screen bg-purple-900 text-white">
       <Routes>
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/login" element={<Navigate to="/auth" replace />} />
         <Route path="/" element={
           <ProtectedRoute>
             <Layout />
           </ProtectedRoute>
         }>
           <Route index element={<Home />} />
+          <Route path="auth" element={<Auth />} />
+          <Route path="login" element={<Navigate to="/auth" replace />} />
           <Route path="menu" element={<Menu />} />
           <Route path="menu/:productId" element={<ProductDetails />} />
-          <Route path="cart" element={<Cart />} />
           <Route path="table/scan" element={<TableScan />} />
           <Route path="table/:tableId" element={<Table />} />
           <Route path="profile" element={<Profile />} />

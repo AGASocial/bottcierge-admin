@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { RootState, AppDispatch } from '../store';
 import { addItemToOrder } from '../store/slices/orderSlice';
-import type { Product } from '../types';
+import { OrderStatus, type Product } from '../types';
 
 interface CustomizationOption {
   id: string;
@@ -91,7 +91,7 @@ const ProductDetails: React.FC = () => {
           size: selectedSize.name,
           sizeId: selectedSize.id,
           customizations: selectedOptions,
-          status: 'pending'
+          status: OrderStatus.PREPARING
         }
       }));
 

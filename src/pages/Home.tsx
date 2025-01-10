@@ -1,176 +1,188 @@
-import React, { useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
-import { QrCodeIcon, ClipboardDocumentListIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
-import type { RootState } from '../store';
-import { getProducts } from 'store/slices/menuSlice';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'store';
-import toast, { Toaster } from 'react-hot-toast';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { Order, OrderStatus } from '../types';
+import { fetchOrders, updateOrderStatus } from '../store/slices/orderSlice';
+import type { AppDispatch } from '../store';
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const currentTableCode = useSelector((state: RootState) => state.table.currentTableCode);
-  const { products: allProducts } = useSelector((state: RootState) => state.menu);
+  const { orderHistory, loading, error } = useSelector((state: RootState) => state.order);
+  const [filteredOrders, setFilteredOrders] = useState<Record<OrderStatus, Order[]>>({
+    [OrderStatus.CREATED]: [],
+    [OrderStatus.AUTHORIZED]: [],
+    [OrderStatus.PREPARING]: [],
+    [OrderStatus.READY]: [],
+    [OrderStatus.SERVED]: [],
+    [OrderStatus.COMPLETED]: [],
+    [OrderStatus.CANCELLED]: [],
+  });
 
+  // Fetch orders on component mount
   useEffect(() => {
-    dispatch(getProducts());
+    dispatch(fetchOrders());
   }, [dispatch]);
 
-  // Get 3 random products for featured section
-  const featuredProducts = useMemo(() => {
-    if (!allProducts.length) return [];
-    const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 3);
-  }, [allProducts]);
+  // Filter orders by status
+  useEffect(() => {
+    const grouped = orderHistory.reduce((acc, order) => {
+      const status = order.status as OrderStatus;
+      return {
+        ...acc,
+        [status]: [...(acc[status] || []), order],
+      };
+    }, {} as Record<OrderStatus, Order[]>);
 
-  const handleStartOrder = () => {
-    if (currentTableCode) {
-      navigate(`/table/${currentTableCode}`);
-    } else {
-      navigate('/table/scan');
+    setFilteredOrders(grouped);
+  }, [orderHistory]);
+
+  const getStatusColor = (status: OrderStatus): string => {
+    const colors: Record<OrderStatus, string> = {
+      [OrderStatus.CREATED]: 'bg-blue-500',
+      [OrderStatus.AUTHORIZED]: 'bg-purple-500',
+      [OrderStatus.PREPARING]: 'bg-yellow-500',
+      [OrderStatus.READY]: 'bg-green-500',
+      [OrderStatus.SERVED]: 'bg-indigo-500',
+      [OrderStatus.COMPLETED]: 'bg-gray-500',
+      [OrderStatus.CANCELLED]: 'bg-red-500'
+    };
+    return colors[status];
+  };
+
+  const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
+    try {
+      await dispatch(updateOrderStatus({ orderId, status: newStatus })).unwrap();
+    } catch (error) {
+      console.error('Failed to update order status:', error);
     }
   };
 
-  const handleCallStacy = () => {
-    toast.success('Stacy has been notified and will be with you shortly!', {
-      icon: '👋',
-      duration: 3000,
-      style: {
-        background: '#dedede',
-        color: '#000',
-        borderRadius: '10px',
-      },
-    });
+  const handleCancelOrder = async (orderId: string, orderNumber: string) => {
+    const isConfirmed = window.confirm(`Are you sure you want to cancel Order #${orderNumber}? This action cannot be undone.`);
+    
+    if (isConfirmed) {
+      try {
+        await dispatch(updateOrderStatus({ orderId, status: OrderStatus.CANCELLED })).unwrap();
+      } catch (error) {
+        console.error('Failed to cancel order:', error);
+      }
+    }
   };
 
-  const handleRefill = (text: string) => {
-    toast.success(`${text}`, {
-      icon: '🍹',
-      duration: 3000,
-      style: {
-        background: '#dedede',
-        color: '#000',
-        borderRadius: '10px',
-      },
-    });
+  const OrderCard: React.FC<{ order: Order }> = ({ order }) => (
+    <div className="glass-card p-4 mb-4">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-lg font-semibold">Order #{order.orderNumber}</span>
+        <span className={`px-2 py-1 rounded-full text-sm ${getStatusColor(order.status)}`}>
+          {order.status}
+        </span>
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm text-gray-300">Table: {order.tableId}</p>
+        <div className="space-y-1">
+          {order.items.map((item) => (
+            <div key={item.id} className="flex justify-between text-sm">
+              <span>{item.quantity}x {item.name}</span>
+              <span>${(item.price * item.quantity).toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between mt-2 pt-2 border-t border-white/10">
+          <span className="font-semibold">Total:</span>
+          <span className="font-semibold">${order.total.toFixed(2)}</span>
+        </div>
+      </div>
+      <div className="mt-4 flex space-x-2">
+        {order.status !== OrderStatus.COMPLETED && order.status !== OrderStatus.CANCELLED && (
+          <button
+            onClick={() => handleStatusUpdate(order.id, getNextStatus(order.status))}
+            className="btn-primary text-sm"
+          >
+            Move to {getNextStatus(order.status)}
+          </button>
+        )}
+        {order.status === OrderStatus.CREATED && (
+          <button
+            onClick={() => handleCancelOrder(order.id, order.orderNumber)}
+            className="btn-danger text-sm"
+          >
+            Cancel Order
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  const getNextStatus = (currentStatus: OrderStatus): OrderStatus => {
+    const statusFlow: Record<OrderStatus, OrderStatus> = {
+      [OrderStatus.CREATED]: OrderStatus.AUTHORIZED,
+      [OrderStatus.AUTHORIZED]: OrderStatus.PREPARING,
+      [OrderStatus.PREPARING]: OrderStatus.READY,
+      [OrderStatus.READY]: OrderStatus.SERVED,
+      [OrderStatus.SERVED]: OrderStatus.COMPLETED,
+      [OrderStatus.COMPLETED]: OrderStatus.COMPLETED,
+      [OrderStatus.CANCELLED]: OrderStatus.CANCELLED,
+    };
+    return statusFlow[currentStatus];
   };
+
+  // Define status order based on the flow
+  const statusOrder = [
+    OrderStatus.CREATED,
+    OrderStatus.AUTHORIZED,
+    OrderStatus.PREPARING,
+    OrderStatus.READY,
+    OrderStatus.SERVED,
+    OrderStatus.COMPLETED,
+    OrderStatus.CANCELLED
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-electric-blue"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="glass-card p-4 text-red-500">
+          Error: {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Toaster position="top-center" />
-      <h1 className="text-3xl font-bold mb-8">Welcome to Bottcierge</h1>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Scan QR Code */}
-        <div
-          onClick={handleStartOrder}
-          className="glass-card p-6 cursor-pointer hover:bg-white/20 transition-all duration-300"
-        >
-          <div className="flex items-center space-x-4 mb-4">
-            <QrCodeIcon className="w-8 h-8 text-electric-blue" />
-            <h2 className="text-xl font-bold">Start a new Order</h2>
-          </div>
-          <p className="text-gray-300">
-            {currentTableCode
-              ? "Continue ordering for your current table"
-              : "To start a new order, please enter or scan your table's QR code"
-            }
-          </p>
-        </div>
-
-        {/* View Orders */}
-        <div
-          onClick={() => navigate('/orders')}
-          className="glass-card p-6 cursor-pointer hover:bg-white/20 transition-all duration-300"
-        >
-          <div className="flex items-center space-x-4 mb-4">
-            <ClipboardDocumentListIcon className="w-8 h-8 text-neon-pink" />
-            <h2 className="text-xl font-bold">View Orders</h2>
-          </div>
-          <p className="text-gray-300">
-            Check your current and past orders
-          </p>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button
-            onClick={handleCallStacy}
-            className="btn-primary"
-          >
-            Call Stacy
-          </button>
-          <button
-            onClick={() => handleRefill('Ice is on the way!')}
-            className="btn-secondary"
-          >
-            Refill ice
-          </button>
-          <button
-            onClick={() => handleRefill('Mixers are on the way!')}
-            className="btn-secondary"
-          >
-            Refill mixers
-          </button>
-          <button
-            onClick={() => handleRefill('Ice & mixers are on the way!')}
-            className="btn-secondary"
-          >
-            Refill ice & mixers
-          </button>
-        </div>
-      </div>
-
-      {/* Featured Drinks */}
-      <div className="mt-12">dscdsdfsdfsdfsd
-        <h2 className="text-2xl font-bold text-white mb-6">Featured Drinks</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredProducts.length > 0 ? (
-            featuredProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-              >
-                {product.image && (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2">{product.name}</h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {product.description}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-purple-600 font-semibold">
-                      ${product.sizes[0].currentPrice.toFixed(2)}
-                    </span>
-                    <button
-                      onClick={() => navigate('/menu')}
-                      className="text-purple-600 hover:text-purple-700"
-                    >
-                      <ArrowRightIcon className="h-5 w-5" />
-                    </button>
-                  </div>
+      <h1 className="text-3xl font-bold mb-8">Order Management</h1>
+      <div className="space-y-8">
+        {statusOrder
+          .filter(status => status !== OrderStatus.COMPLETED && status !== OrderStatus.CANCELLED)
+          .map(status => {
+            const orders = filteredOrders[status] || [];
+            return (
+              <div key={status} className="glass-card p-6">
+                <h2 className="text-2xl font-bold mb-6 flex items-center">
+                  <span className={`w-4 h-4 rounded-full mr-3 ${getStatusColor(status)}`}></span>
+                  {status.charAt(0).toUpperCase() + status.slice(1)} Orders ({orders.length})
+                </h2>
+                <div className="space-y-4">
+                  {orders.length === 0 ? (
+                    <p className="text-gray-400 text-center py-4">No orders</p>
+                  ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {orders.map((order) => (
+                        <OrderCard key={order.id} order={order} />
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </motion.div>
-            ))
-          ) : (
-            <div className="col-span-3 text-center text-purple-200 py-8">
-              Loading featured drinks...
-            </div>
-          )}
-        </div>
+              </div>
+            );
+          })}
       </div>
     </div>
   );

@@ -1,249 +1,249 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MagnifyingGlassIcon, ShoppingBagIcon, PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
-import type { AppDispatch, RootState } from '../store';
-import { getProducts, getCategories, setSelectedProduct } from '../store/slices/menuSlice';
-import { addItemToOrder, removeFromCart } from '../store/slices/orderSlice';
-import type { Product, OrderItem } from '../types';
+import { RootState } from '../store';
+import { Product, MenuCategory } from '../types';
+import type { AppDispatch } from '../store';
 
 const Menu: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const { venueId } = useParams<{ venueId: string }>();
-  const { products, loading, categories } = useSelector((state: RootState) => state.menu);
-  const { currentVenue } = useSelector((state: RootState) => state.venue);
-  const { currentOrder } = useSelector((state: RootState) => state.order);
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string | string[]>>({});
-
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState('');
-  const [selectedSizes, setSelectedSizes] = useState<{ [productId: string]: string }>({});
-  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  useEffect(() => {
-    dispatch(getProducts());
-    dispatch(getCategories());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (categories.length > 0 && !activeCategory) {
-      setActiveCategory(categories[0].id);
+  // TODO: Replace with actual Redux state
+  const [products, setProducts] = useState<Product[]>([
+    {
+      id: '1',
+      name: 'Classic Margarita',
+      description: 'Traditional margarita with lime and salt',
+      price: 12.99,
+      image: 'https://example.com/margarita.jpg',
+      category: 'cocktails',
+      brand: 'House Special',
+      status: 'available',
+      section: 'drinks',
+      brandId: 'brand1',
+      type: 'cocktail',
+      inventory: {
+        current: 100,
+        minimum: 20,
+        maximum: 200
+      },
+      sizes: [
+        {
+          id: 'size1',
+          name: 'Regular',
+          currentPrice: 12.99,
+          isAvailable: true
+        },
+        {
+          id: 'size2',
+          name: 'Large',
+          currentPrice: 15.99,
+          isAvailable: true
+        }
+      ]
     }
-  }, [categories, activeCategory]);
+  ]);
 
-  const handleAddToCart = (product: Product) => {
-    const selectedSize = selectedSizes[product.id] || product.sizes[0].id;
-    const size = product.sizes.find(s => s.id === selectedSize);
-
-    if (!size || !currentOrder?.orderNumber) return;
-
-    dispatch(addItemToOrder({
-      orderId: currentOrder.id,
-      item: {
-        productId: product.id,
-        name: `${product.name} (${size.name})`,
-        quantity: 1,
-        price: size.currentPrice,
-        status: 'pending',
-        sizeId: size.id,
-        size: size.name,
-        customizations: selectedOptions
-      }
-    }));
-  };
-
-  const handleRemoveFromCart = (itemId: string) => {
-    dispatch(removeFromCart(itemId));
-  };
-
-  const getItemQuantityInCart = (productId: string) => {
-    return currentOrder?.items.reduce((count, item) => (
-      item.productId === productId ? count + item.quantity : count
-    ), 0);
-  };
-
-  const scrollToCategory = (categoryId: string) => {
-    categoryRefs.current[categoryId]?.scrollIntoView({ behavior: 'smooth' });
-    setActiveCategory(categoryId);
-  };
-
-  const renderQuantityControls = (product: Product) => {
-    if (!currentOrder) return null;
-
-    const quantity = getItemQuantityInCart(product.id) || 0;
-    const cartItem = currentOrder?.items.find(item => item.productId === product.id);
-
-    if (quantity > 0) {
-      return (
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => cartItem && handleRemoveFromCart(cartItem.id)}
-            className="p-1 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-600"
-          >
-            <MinusIcon className="h-4 w-4" />
-          </button>
-          <span className="text-purple-900 font-medium">{quantity}</span>
-          <button
-            onClick={() => handleAddToCart(product)}
-            className="p-1 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-600"
-          >
-            <PlusIcon className="h-4 w-4" />
-          </button>
-        </div>
-      );
+  const [categories] = useState<MenuCategory[]>([
+    {
+      id: 'cat1',
+      name: 'Cocktails',
+      code: 'cocktails',
+      displayOrder: 1,
+      isActive: true,
+      type: 'beverage'
     }
+  ]);
 
-    return (
-      <div className="space-y-2">
-        <select
-          value={selectedSizes[product.id] || product.sizes[0].id}
-          onChange={(e) => setSelectedSizes(prev => ({ ...prev, [product.id]: e.target.value }))}
-          className="block w-full px-2 py-1 text-sm rounded bg-purple-700 text-white border border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-        >
-          {product.sizes.map(size => (
-            <option key={size.id} value={size.id}>
-              {size.name} - ${size.currentPrice.toFixed(2)}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={() => handleAddToCart(product)}
-          className="w-full px-3 py-1 rounded-full bg-purple-600 text-white text-sm hover:bg-purple-700"
-        >
-          Add
-        </button>
-      </div>
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = !selectedCategory || product.category === selectedCategory;
+    const matchesSearch = !searchTerm || 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const handleUpdateProduct = (productId: string, updates: Partial<Product>) => {
+    setProducts(prevProducts =>
+      prevProducts.map(product =>
+        product.id === productId ? { ...product, ...updates } : product
+      )
     );
   };
 
-  return (
-    <div className="min-h-screen bg-purple-900">
-      {/* Header */}
-      <div className="bg-purple-800 sticky top-0 z-10 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-white">
-                {currentVenue?.name || 'Menu'}
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search menu..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-64 pl-10 pr-4 py-2 rounded-full bg-purple-700 text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <MagnifyingGlassIcon className="h-5 w-5 text-purple-300 absolute left-3 top-2.5" />
-              </div>
-              <div
-                className="relative cursor-pointer"
-                onClick={() => navigate('/cart')}
-              >
-                <ShoppingBagIcon className="h-6 w-6 text-white hover:text-purple-300 transition-colors" />
-                {currentOrder && currentOrder.items.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs font-medium rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
-                    {currentOrder.items.reduce((total, item) => total + item.quantity, 0)}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+  const handleUpdateInventory = (
+    productId: string,
+    field: keyof Product['inventory'],
+    value: number
+  ) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      handleUpdateProduct(productId, {
+        inventory: {
+          ...product.inventory,
+          [field]: value
+        }
+      });
+    }
+  };
 
-        {/* Category Navigation */}
-        <div className="border-t border-purple-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8 overflow-x-auto py-3 scrollbar-hide">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => scrollToCategory(category.id)}
-                  className={`text-sm font-medium whitespace-nowrap ${activeCategory === category.id
-                    ? 'text-white'
-                    : 'text-purple-300 hover:text-white'
-                    }`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Menu Management</h1>
+        <button className="btn-primary">Add New Product</button>
+      </div>
+
+      {/* Search and Filter */}
+      <div className="glass-card p-4 mb-8">
+        <div className="flex flex-col md:flex-row gap-4">
+          <input
+            type="text"
+            placeholder="Search products..."
+            className="input-field flex-1"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <select
+            className="input-field md:w-48"
+            value={selectedCategory || ''}
+            onChange={(e) => setSelectedCategory(e.target.value || null)}
+          >
+            <option value="">All Categories</option>
+            {categories.map(category => (
+              <option key={category.id} value={category.code}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Menu Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-          </div>
-        ) : (
-          <div className="space-y-12">
-            {categories.map((category) => {
-              const categoryProducts = products.filter(
-                p => p.category === category.id &&
-                  (searchTerm === '' || p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-              );
-
-              if (categoryProducts.length === 0) return null;
-
-              return (
-                <div
-                  key={category.id}
-                  ref={el => categoryRefs.current[category.id] = el}
-                  className="space-y-6"
-                >
-                  <h2 className="text-xl font-bold text-white">{category.name}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {categoryProducts.map((product) => (
-                      <div
-                        key={product.id}
-                        className="bg-purple-800 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:bg-purple-700 transition-colors"
-                        onClick={() => navigate(`/menu/${product.id}`)}
-                      >
-                        {product.image && (
-                          <div className="aspect-w-16 aspect-h-9">
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="w-full h-48 object-cover"
-                            />
-                          </div>
-                        )}
-                        <div className="p-4">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="text-lg font-medium text-white">
-                                {product.name}
-                              </h3>
-                              <p className="text-sm text-purple-300 mt-1">
-                                {product.description}
-                              </p>
-                              <div className="mt-2 space-y-1">
-                                {product.sizes.map(size => (
-                                  <div key={size.id} className="flex justify-between text-sm">
-                                    <span className="text-purple-300">{size.name}</span>
-                                    <span className="text-white">${size.currentPrice.toFixed(2)}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredProducts.map(product => (
+          <div key={product.id} className="glass-card p-4">
+            {product.image && (
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
+            )}
+            <div className="space-y-2">
+              <div className="flex justify-between items-start">
+                <h3 className="text-lg font-semibold">{product.name}</h3>
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  product.status === 'available' ? 'bg-green-500' : 'bg-red-500'
+                }`}>
+                  {product.status}
+                </span>
+              </div>
+              <p className="text-sm text-gray-300">{product.description}</p>
+              
+              {/* Inventory Management */}
+              <div className="mt-4 space-y-2">
+                <h4 className="font-semibold">Inventory</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="text-xs text-gray-400">Current</label>
+                    <input
+                      type="number"
+                      className="input-field w-full"
+                      value={product.inventory.current}
+                      onChange={(e) => handleUpdateInventory(
+                        product.id,
+                        'current',
+                        parseInt(e.target.value)
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-400">Min</label>
+                    <input
+                      type="number"
+                      className="input-field w-full"
+                      value={product.inventory.minimum}
+                      onChange={(e) => handleUpdateInventory(
+                        product.id,
+                        'minimum',
+                        parseInt(e.target.value)
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-400">Max</label>
+                    <input
+                      type="number"
+                      className="input-field w-full"
+                      value={product.inventory.maximum}
+                      onChange={(e) => handleUpdateInventory(
+                        product.id,
+                        'maximum',
+                        parseInt(e.target.value)
+                      )}
+                    />
                   </div>
                 </div>
-              );
-            })}
+              </div>
+
+              {/* Sizes and Pricing */}
+              <div className="mt-4">
+                <h4 className="font-semibold mb-2">Sizes & Pricing</h4>
+                {product.sizes.map(size => (
+                  <div key={size.id} className="flex justify-between items-center mb-2">
+                    <span>{size.name}</span>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        className="input-field w-24"
+                        value={size.currentPrice}
+                        onChange={(e) => {
+                          const newSizes = product.sizes.map(s =>
+                            s.id === size.id
+                              ? { ...s, currentPrice: parseFloat(e.target.value) }
+                              : s
+                          );
+                          handleUpdateProduct(product.id, { sizes: newSizes });
+                        }}
+                      />
+                      <button
+                        className={`px-2 py-1 rounded ${
+                          size.isAvailable
+                            ? 'bg-green-500 hover:bg-green-600'
+                            : 'bg-red-500 hover:bg-red-600'
+                        }`}
+                        onClick={() => {
+                          const newSizes = product.sizes.map(s =>
+                            s.id === size.id
+                              ? { ...s, isAvailable: !s.isAvailable }
+                              : s
+                          );
+                          handleUpdateProduct(product.id, { sizes: newSizes });
+                        }}
+                      >
+                        {size.isAvailable ? 'Available' : 'Unavailable'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex justify-end space-x-2">
+                <button
+                  className="btn-secondary"
+                  onClick={() => handleUpdateProduct(product.id, {
+                    status: product.status === 'available' ? 'out_of_stock' : 'available'
+                  })}
+                >
+                  Toggle Status
+                </button>
+                <button className="btn-primary">Edit</button>
+              </div>
+            </div>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
