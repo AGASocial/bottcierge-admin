@@ -47,7 +47,7 @@ const Layout: React.FC = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-deep-purple/95 backdrop-blur-lg border-t border-white/10">
+      <nav className="fixed bottom-0 left-0 right-0 bg-deep-blue/95 backdrop-blur-lg border-t border-white/10">
         <div className="container mx-auto px-4">
           <div className="flex justify-around py-4">
             {menuItems.map(({ path, icon: Icon, label, badge }) => {

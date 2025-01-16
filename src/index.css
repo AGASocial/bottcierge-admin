@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-deep-purple text-white;
+    @apply bg-deep-blue text-white;
   }
 }
 
