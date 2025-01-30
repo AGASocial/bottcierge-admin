@@ -33,6 +33,13 @@ export const createOrder = createAsyncThunk(
   }
 );
 
+export const updateOrderStatus = createAsyncThunk(
+  'order/updateStatus',
+  async ({ orderId, status }: { orderId: string; status: OrderStatus }) => {
+    const response = await api.patch(`/orders/${orderId}`, { status });
+    return response.data;
+  }
+);
 
 export const getOrders = createAsyncThunk(
   'order/getOrders',
@@ -42,7 +49,6 @@ export const getOrders = createAsyncThunk(
   }
 );
 
-
 export const removeItemFromOrder = createAsyncThunk(
   'order/removeItem',
   async ({ orderId, itemId }: { orderId: string; itemId: string }) => {
@@ -51,21 +57,12 @@ export const removeItemFromOrder = createAsyncThunk(
   }
 );
 
-
 // Async thunks
 export const fetchOrders = createAsyncThunk(
   'order/fetchOrders',
   async () => {
     const orders = await orderService.getOrders();
     return orders;
-  }
-);
-
-export const updateOrderStatus = createAsyncThunk(
-  'order/updateStatus',
-  async ({ orderId, status }: { orderId: string; status: OrderStatus }) => {
-    const updatedOrder = await orderService.updateOrderStatus(orderId, status);
-    return updatedOrder;
   }
 );
 
@@ -83,6 +80,21 @@ const orderSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    updateOrderStatusSocket: (state, action) => {
+      const { orderId, status } = action.payload;
+      state.orderHistory = state.orderHistory.map(order =>
+        order.id === orderId ? { ...order, status } : order
+      );
+    },
+    addNewPaidOrders: (state, action) => {
+      const newPaidOrders = action.payload;
+      // Filter out any orders that we already have
+      const uniqueNewOrders = newPaidOrders.filter(
+        newOrder => !state.orderHistory.some(existingOrder => existingOrder.id === newOrder.id)
+      );
+      // Add new orders to the beginning of the list
+      state.orderHistory = [...uniqueNewOrders, ...state.orderHistory];
     },
   },
   extraReducers: (builder) => {
@@ -135,5 +147,5 @@ const orderSlice = createSlice({
   },
 });
 
-export const { clearError } = orderSlice.actions;
+export const { clearError, updateOrderStatusSocket, addNewPaidOrders } = orderSlice.actions;
 export default orderSlice.reducer;

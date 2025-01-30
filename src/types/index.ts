@@ -75,6 +75,12 @@ export interface Order {
   type: string;
 }
 
+export interface OrderStatusUpdate {
+  orderId: string;
+  status: OrderStatus;
+  updatedAt: string;
+}
+
 export interface Product {
   id: string;
   name: string;

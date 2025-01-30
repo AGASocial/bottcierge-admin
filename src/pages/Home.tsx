@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Order, OrderStatus } from '../types';
+import { Order, OrderStatus, OrderStatusUpdate } from '../types';
 import { ORDER_STATUS_COLORS, ORDER_STATUS_SEQUENCE, TERMINAL_STATUSES } from '../utils/orderConstants';
-import { fetchOrders, updateOrderStatus } from '../store/slices/orderSlice';
+import { fetchOrders, updateOrderStatus, updateOrderStatusSocket, addNewPaidOrders } from '../store/slices/orderSlice';
 import type { AppDispatch } from '../store';
 import Dialog from '../components/common/Dialog';
+import { socketService } from '../services/socketService';
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,14 +20,57 @@ const Home: React.FC = () => {
     [OrderStatus.COMPLETED]: [],
     [OrderStatus.CANCELLED]: [],
   });
+  const [orderToCancel, setOrderToCancel] = useState<{ id: string; number: string } | null>(null);
 
-  // Fetch orders on component mount
+  // Initial fetch of orders
   useEffect(() => {
+    console.log('Fetching orders...');
     dispatch(fetchOrders());
+
+    // Set up socket connection and subscriptions
+    socketService.connect();
+
+    // Subscribe to all orders
+    const handleOrders = (orders: Order[]) => {
+      // Only handle new PAID orders from socket
+      const paidOrders = orders.filter(order => order.status === OrderStatus.PAID);
+      if (paidOrders.length > 0) {
+        console.log('Received new PAID orders:', paidOrders);
+        // Merge paid orders with existing orders
+        dispatch(addNewPaidOrders(paidOrders));
+      }
+    };
+
+    // Listen for order status updates
+    const handleStatusUpdate = (update: OrderStatusUpdate) => {
+      const completeUpdate: OrderStatusUpdate = {
+        ...update,
+        updatedAt: new Date().toISOString()
+      };
+
+      console.log('Order status updated2:', completeUpdate);
+      if (completeUpdate.status === OrderStatus.PAID) {
+        // For PAID status, we add it directly via socket
+        dispatch(updateOrderStatusSocket(completeUpdate));
+      } else {
+        // For other status changes, refresh via API to ensure consistency
+        dispatch(fetchOrders());
+      }
+    };
+
+    socketService.subscribeToAllOrders(handleOrders);
+    const cleanup = socketService.onOrderStatusUpdate(handleStatusUpdate);
+
+    return () => {
+      cleanup();
+      socketService.unsubscribeFromAllOrders();
+      socketService.disconnect();
+    };
   }, [dispatch]);
 
-  // Filter orders by status
+  // Filter orders by status whenever orderHistory changes
   useEffect(() => {
+    // console.log('Filtering orders:', orderHistory);
     const grouped = orderHistory.reduce((acc, order) => {
       const status = order.status as OrderStatus;
       return {
@@ -49,6 +93,12 @@ const Home: React.FC = () => {
     return `${baseClasses} ${colorClass} ${animationClass}`;
   };
 
+  const getCardClass = (status: OrderStatus) => {
+    const baseClasses = 'glass-card p-4 mb-4';
+    const bgClass = status === OrderStatus.PAID ? 'bg-deep-blue/100' : '';
+    return `${baseClasses} ${bgClass}`;
+  };
+
   const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
     try {
       await dispatch(updateOrderStatus({ orderId, status: newStatus })).unwrap();
@@ -56,8 +106,6 @@ const Home: React.FC = () => {
       console.error('Failed to update order status:', error);
     }
   };
-
-  const [orderToCancel, setOrderToCancel] = useState<{ id: string; number: string } | null>(null);
 
   const handleCancelOrder = (orderId: string, orderNumber: string) => {
     setOrderToCancel({ id: orderId, number: orderNumber });
@@ -79,7 +127,7 @@ const Home: React.FC = () => {
   };
 
   const OrderCard: React.FC<{ order: Order }> = ({ order }) => (
-    <div className="glass-card p-4 mb-4">
+    <div className={getCardClass(order.status as OrderStatus)}>
       <div className="flex justify-between items-center mb-2">
         <span className="text-lg font-semibold">Order #{order.orderNumber}</span>
         <span className={getStatusBadgeClass(order.status as OrderStatus)}>
