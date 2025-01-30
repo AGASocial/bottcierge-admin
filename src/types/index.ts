@@ -29,24 +29,35 @@ export interface OrderHistory {
   total: number;
 }
 
+export interface Size {
+  id: string;
+  name: string;
+  currentPrice: number;
+  isAvailable: boolean;
+}
+
 export interface OrderItem {
   id: string;
   productId: string;
   name: string;
   quantity: number;
   price: number;
-  size: string;
-  sizeId: string;
-  customizations: Record<string, string | string[]>;
-  status: OrderStatus;
+  totalPrice: number;
+  size: Size;
+  options: {
+    mixers?: string[];
+    ice?: string;
+    [key: string]: any;
+  };
+  status: string;
 }
 
 export enum OrderStatus {
-  CREATED = 'created',
-  AUTHORIZED = 'authorized',
+  DRAFT = 'draft',
+  PAID = 'paid',
+  ACCEPTED = 'accepted',
   PREPARING = 'preparing',
-  READY = 'ready',
-  SERVED = 'served',
+  SERVING = 'serving',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled'
 }
@@ -54,25 +65,14 @@ export enum OrderStatus {
 export interface Order {
   id: string;
   orderNumber: string;
-  userId: string;
-  tableId: string;
+  status: string;
   items: OrderItem[];
-  status: OrderStatus;
   total: number;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface OrderItem {
-  id: string;
-  productId: string;
-  name: string;
-  quantity: number;
-  price: number;
-  size: string;
-  sizeId: string;
-  customizations: Record<string, string | string[]>;
-  status: OrderStatus;
+  venueId: string;
+  tableId: string;
+  type: string;
 }
 
 export interface Product {

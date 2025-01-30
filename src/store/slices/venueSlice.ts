@@ -49,7 +49,7 @@ const initialState: VenueState = {
 
 const venueNames = [
   "The Purple Lounge",
-  "Bottcierge Bar & Grill",
+  "Bottcierge",
   "Skyline Social",
   "The Rustic Barrel",
   "Urban Spirits",

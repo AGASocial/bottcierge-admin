@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Order, OrderStatus } from '../types';
+import { ORDER_STATUS_COLORS, ORDER_STATUS_SEQUENCE, TERMINAL_STATUSES } from '../utils/orderConstants';
 import { fetchOrders, updateOrderStatus } from '../store/slices/orderSlice';
 import type { AppDispatch } from '../store';
 import Dialog from '../components/common/Dialog';
@@ -11,11 +12,11 @@ const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { orderHistory, loading, error } = useSelector((state: RootState) => state.order);
   const [filteredOrders, setFilteredOrders] = useState<Record<OrderStatus, Order[]>>({
-    [OrderStatus.CREATED]: [],
-    [OrderStatus.AUTHORIZED]: [],
+    [OrderStatus.DRAFT]: [],
+    [OrderStatus.PAID]: [],
+    [OrderStatus.ACCEPTED]: [],
     [OrderStatus.PREPARING]: [],
-    [OrderStatus.READY]: [],
-    [OrderStatus.SERVED]: [],
+    [OrderStatus.SERVING]: [],
     [OrderStatus.COMPLETED]: [],
     [OrderStatus.CANCELLED]: [],
   });
@@ -39,16 +40,7 @@ const Home: React.FC = () => {
   }, [orderHistory]);
 
   const getStatusColor = (status: OrderStatus): string => {
-    const colors: Record<OrderStatus, string> = {
-      [OrderStatus.CREATED]: 'bg-blue-500',
-      [OrderStatus.AUTHORIZED]: 'bg-purple-500',
-      [OrderStatus.PREPARING]: 'bg-yellow-500',
-      [OrderStatus.READY]: 'bg-green-500',
-      [OrderStatus.SERVED]: 'bg-indigo-500',
-      [OrderStatus.COMPLETED]: 'bg-gray-500',
-      [OrderStatus.CANCELLED]: 'bg-red-500'
-    };
-    return colors[status];
+    return ORDER_STATUS_COLORS[status];
   };
 
   const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
@@ -68,9 +60,9 @@ const Home: React.FC = () => {
   const confirmCancelOrder = async () => {
     if (orderToCancel) {
       try {
-        await dispatch(updateOrderStatus({ 
-          orderId: orderToCancel.id, 
-          status: OrderStatus.CANCELLED 
+        await dispatch(updateOrderStatus({
+          orderId: orderToCancel.id,
+          status: OrderStatus.CANCELLED
         })).unwrap();
       } catch (error) {
         console.error('Failed to cancel order:', error);
@@ -112,7 +104,7 @@ const Home: React.FC = () => {
             Move to {getNextStatus(order.status)}
           </button>
         )}
-        {order.status === OrderStatus.CREATED && (
+        {order.status === OrderStatus.PAID && (
           <button
             onClick={() => handleCancelOrder(order.id, order.orderNumber)}
             className="btn-danger text-sm"
@@ -126,32 +118,21 @@ const Home: React.FC = () => {
 
   const getNextStatus = (currentStatus: OrderStatus): OrderStatus => {
     const statusFlow: Record<OrderStatus, OrderStatus> = {
-      [OrderStatus.CREATED]: OrderStatus.AUTHORIZED,
-      [OrderStatus.AUTHORIZED]: OrderStatus.PREPARING,
-      [OrderStatus.PREPARING]: OrderStatus.READY,
-      [OrderStatus.READY]: OrderStatus.SERVED,
-      [OrderStatus.SERVED]: OrderStatus.COMPLETED,
+      [OrderStatus.DRAFT]: OrderStatus.DRAFT,
+      [OrderStatus.PAID]: OrderStatus.ACCEPTED,
+      [OrderStatus.ACCEPTED]: OrderStatus.PREPARING,
+      [OrderStatus.PREPARING]: OrderStatus.SERVING,
+      [OrderStatus.SERVING]: OrderStatus.COMPLETED,
       [OrderStatus.COMPLETED]: OrderStatus.COMPLETED,
-      [OrderStatus.CANCELLED]: OrderStatus.CANCELLED,
+      [OrderStatus.CANCELLED]: OrderStatus.CANCELLED
     };
     return statusFlow[currentStatus];
   };
 
-  // Define status order based on the flow
-  const statusOrder = [
-    OrderStatus.CREATED,
-    OrderStatus.AUTHORIZED,
-    OrderStatus.PREPARING,
-    OrderStatus.READY,
-    OrderStatus.SERVED,
-    OrderStatus.COMPLETED,
-    OrderStatus.CANCELLED
-  ];
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-electric-blue"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
       </div>
     );
   }
@@ -166,43 +147,13 @@ const Home: React.FC = () => {
     );
   }
 
-  const createdOrders = filteredOrders[OrderStatus.CREATED] || [];
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Order Management</h1>
-      <div className="space-y-8">
-        {/* Created Orders Section */}
-        <div>
-          <h2 className="text-xl font-bold mb-4 flex items-center">
-            New Orders
-            {createdOrders.length > 0 && (
-              <Badge
-                count={createdOrders.length}
-                variant="error"
-                className="ml-2 animate-pulse"
-              />
-            )}
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {createdOrders.map((order) => (
-              <div
-                key={order.id}
-                className="glass-card p-4 relative overflow-hidden group"
-              >
-                {/* Blinking indicator */}
-                <div className="absolute inset-0 bg-electric-blue/10 animate-pulse-slow pointer-events-none" />
-                
-                {/* Order content */}
-                <OrderCard order={order} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Other Orders Section */}
-        {statusOrder
-          .filter(status => status !== OrderStatus.CREATED && status !== OrderStatus.COMPLETED && status !== OrderStatus.CANCELLED)
+      <div className="grid grid-cols-1 gap-6">
+        {/* Active Orders Section */}
+        {ORDER_STATUS_SEQUENCE
+          .filter(status => !TERMINAL_STATUSES.includes(status))
           .map(status => {
             const orders = filteredOrders[status] || [];
             return (

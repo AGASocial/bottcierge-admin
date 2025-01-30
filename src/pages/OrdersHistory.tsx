@@ -5,23 +5,12 @@ import { ClockIcon } from '@heroicons/react/24/outline';
 import { getOrders } from '../store/slices/orderSlice';
 import type { AppDispatch, RootState } from '../store';
 import { Order, OrderStatus } from '../types';
+import { ORDER_STATUS_COLORS, ORDER_STATUS_SEQUENCE } from '../utils/orderConstants';
 
 const OrderStatusBadge: React.FC<{ status: Order['status'] }> = ({ status }) => {
-  const colors: Record<OrderStatus, string> = {
-    [OrderStatus.CREATED]: 'bg-yellow-500',
-    [OrderStatus.AUTHORIZED]: 'bg-blue-500',
-    [OrderStatus.PREPARING]: 'bg-purple-500',
-    [OrderStatus.READY]: 'bg-green-500',
-    [OrderStatus.SERVED]: 'bg-gray-500',
-    [OrderStatus.COMPLETED]: 'bg-green-500',
-    [OrderStatus.CANCELLED]: 'bg-red-500'
-  };
-
   return (
-    <span
-      className={`px-2 py-1 rounded-full text-white text-sm ${colors[status]}`}
-    >
-      {status.charAt(0).toUpperCase() + status.slice(1)}
+    <span className={`px-2 py-1 text-white rounded-full text-sm ${ORDER_STATUS_COLORS[status]}`}>
+      {status}
     </span>
   );
 };
@@ -43,15 +32,7 @@ const Orders: React.FC = () => {
     return acc;
   }, {} as Record<OrderStatus, Order[]>);
 
-  const statusOrder = [
-    OrderStatus.CREATED,
-    OrderStatus.AUTHORIZED,
-    OrderStatus.PREPARING,
-    OrderStatus.READY,
-    OrderStatus.SERVED,
-    OrderStatus.COMPLETED,
-    OrderStatus.CANCELLED
-  ];
+  const statusOrder = ORDER_STATUS_SEQUENCE;
 
   const filteredStatuses = statusOrder.filter(status => {
     if (filter === 'all') {
