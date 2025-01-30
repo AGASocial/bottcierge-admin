@@ -17,12 +17,17 @@ module.exports = {
       },
       animation: {
         'liquid': 'liquid 1.5s ease-in-out infinite',
+        'pulse-fast': 'pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         liquid: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-5px)' },
-        }
+        },
+        'pulse-fast': {
+          '0%, 100%': { opacity: 1 },
+          '50%': { opacity: .5 },
+        },
       },
       backdropBlur: {
         'glass': '16px',

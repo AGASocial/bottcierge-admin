@@ -6,7 +6,6 @@ import { ORDER_STATUS_COLORS, ORDER_STATUS_SEQUENCE, TERMINAL_STATUSES } from '.
 import { fetchOrders, updateOrderStatus } from '../store/slices/orderSlice';
 import type { AppDispatch } from '../store';
 import Dialog from '../components/common/Dialog';
-import Badge from '../components/common/Badge'; // Import Badge component
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -43,6 +42,13 @@ const Home: React.FC = () => {
     return ORDER_STATUS_COLORS[status];
   };
 
+  const getStatusBadgeClass = (status: OrderStatus) => {
+    const baseClasses = 'px-2 py-1 rounded-full text-sm';
+    const colorClass = getStatusColor(status);
+    const animationClass = status === OrderStatus.PAID ? 'animate-pulse-fast' : '';
+    return `${baseClasses} ${colorClass} ${animationClass}`;
+  };
+
   const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
     try {
       await dispatch(updateOrderStatus({ orderId, status: newStatus })).unwrap();
@@ -76,7 +82,7 @@ const Home: React.FC = () => {
     <div className="glass-card p-4 mb-4">
       <div className="flex justify-between items-center mb-2">
         <span className="text-lg font-semibold">Order #{order.orderNumber}</span>
-        <span className={`px-2 py-1 rounded-full text-sm ${getStatusColor(order.status)}`}>
+        <span className={getStatusBadgeClass(order.status as OrderStatus)}>
           {order.status}
         </span>
       </div>
@@ -95,23 +101,29 @@ const Home: React.FC = () => {
           <span className="font-semibold">${order.total.toFixed(2)}</span>
         </div>
       </div>
-      <div className="mt-4 flex space-x-2">
-        {order.status !== OrderStatus.COMPLETED && order.status !== OrderStatus.CANCELLED && (
-          <button
-            onClick={() => handleStatusUpdate(order.id, getNextStatus(order.status))}
-            className="btn-primary text-sm"
-          >
-            Move to {getNextStatus(order.status)}
-          </button>
-        )}
-        {order.status === OrderStatus.PAID && (
-          <button
-            onClick={() => handleCancelOrder(order.id, order.orderNumber)}
-            className="btn-danger text-sm"
-          >
-            Cancel Order
-          </button>
-        )}
+      <div className="mt-4 flex justify-between space-x-2">
+        <div className="justify-self-start">
+
+          {order.status === OrderStatus.PAID && (
+            <button
+              onClick={() => handleCancelOrder(order.id, order.orderNumber)}
+              className="btn-secondary text-sm"
+            >
+              Cancel Order
+            </button>
+          )}
+        </div>
+        <div className="justify-self-end">
+
+          {order.status !== OrderStatus.COMPLETED && order.status !== OrderStatus.CANCELLED && (
+            <button
+              onClick={() => handleStatusUpdate(order.id, getNextStatus(order.status as OrderStatus))}
+              className="btn-primary text-sm"
+            >
+              Move to {getNextStatus(order.status as OrderStatus)}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
