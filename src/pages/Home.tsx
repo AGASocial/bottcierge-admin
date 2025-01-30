@@ -42,7 +42,7 @@ const Home: React.FC = () => {
     };
 
     // Listen for order status updates
-    const handleStatusUpdate = (update: OrderStatusUpdate) => {
+    const handleStatusUpdate = (update: Omit<OrderStatusUpdate, 'updatedAt'>) => {
       const completeUpdate: OrderStatusUpdate = {
         ...update,
         updatedAt: new Date().toISOString()

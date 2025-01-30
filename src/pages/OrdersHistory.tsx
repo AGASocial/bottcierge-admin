@@ -7,9 +7,9 @@ import type { AppDispatch, RootState } from '../store';
 import { Order, OrderStatus } from '../types';
 import { ORDER_STATUS_COLORS, ORDER_STATUS_SEQUENCE } from '../utils/orderConstants';
 
-const OrderStatusBadge: React.FC<{ status: Order['status'] }> = ({ status }) => {
+const OrderStatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => {
   return (
-    <span className={`px-2 py-1 text-white rounded-full text-sm ${ORDER_STATUS_COLORS[status]}`}>
+    <span className={`px-2 py-1 text-white rounded-full text-sm ${ORDER_STATUS_COLORS[status as OrderStatus]}`}>
       {status}
     </span>
   );
@@ -24,11 +24,12 @@ const Orders: React.FC = () => {
     dispatch(getOrders());
   }, [dispatch]);
 
-  const groupedOrders = orders.reduce((acc, order: Order) => {
-    if (!acc[order.status]) {
-      acc[order.status] = [];
+  const groupedOrders = orders.reduce((acc: Record<OrderStatus, Order[]>, order: Order) => {
+    const status = order.status as OrderStatus;
+    if (!acc[status]) {
+      acc[status] = [];
     }
-    acc[order.status].push(order);
+    acc[status].push(order);
     return acc;
   }, {} as Record<OrderStatus, Order[]>);
 
@@ -60,7 +61,7 @@ const Orders: React.FC = () => {
         <div>
           <div className="flex items-center space-x-4 mb-2">
             <h3 className="text-xl font-bold">Order #{order.orderNumber}</h3>
-            <OrderStatusBadge status={order.status} />
+            <OrderStatusBadge status={order.status as OrderStatus} />
           </div>
           <div className="flex items-center space-x-2 text-gray-500">
             <ClockIcon className="w-4 h-4" />

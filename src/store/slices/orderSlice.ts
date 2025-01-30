@@ -91,7 +91,7 @@ const orderSlice = createSlice({
       const newPaidOrders = action.payload;
       // Filter out any orders that we already have
       const uniqueNewOrders = newPaidOrders.filter(
-        newOrder => !state.orderHistory.some(existingOrder => existingOrder.id === newOrder.id)
+        (newOrder: Order) => !state.orderHistory.some(existingOrder => existingOrder.id === newOrder.id)
       );
       // Add new orders to the beginning of the list
       state.orderHistory = [...uniqueNewOrders, ...state.orderHistory];

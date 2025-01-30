@@ -18,6 +18,13 @@ interface CustomizationOption {
   }[];
 }
 
+interface Size {
+  id: string;
+  name: string;
+  currentPrice: number;
+  isAvailable: boolean;
+}
+
 const ProductDetails: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
@@ -26,7 +33,7 @@ const ProductDetails: React.FC = () => {
   const { products } = useSelector((state: RootState) => state.menu);
   const { currentOrder } = useSelector((state: RootState) => state.order);
   const product = products.find(p => p.id === productId);
-  const [selectedSize, setSelectedSize] = useState(product?.sizes[0]);
+  const [selectedSize, setSelectedSize] = useState<Size | null>(product?.sizes?.[0] ?? null);
   const [customizationOptions, setCustomizationOptions] = useState<CustomizationOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string | string[]>>({});
 
@@ -88,9 +95,9 @@ const ProductDetails: React.FC = () => {
           name: product.name,
           quantity: 1,
           price: selectedSize.currentPrice,
-          size: selectedSize.name,
-          sizeId: selectedSize.id,
-          customizations: selectedOptions,
+          size: selectedSize,
+          totalPrice: selectedSize.currentPrice,
+          options: selectedOptions,
           status: OrderStatus.PREPARING
         }
       }));
@@ -128,7 +135,7 @@ const ProductDetails: React.FC = () => {
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-white mb-3">Select Size</h2>
               <div className="grid grid-cols-2 gap-3">
-                {product.sizes.map(size => (
+                {product.sizes.map((size: Size) => (
                   <button
                     key={size.id}
                     onClick={() => setSelectedSize(size)}
