@@ -40,16 +40,12 @@ export interface OrderItem {
   id: string;
   productId: string;
   name: string;
-  quantity: number;
   price: number;
   totalPrice: number;
+  quantity: number;
   size: Size;
-  options: {
-    mixers?: string[];
-    ice?: string;
-    [key: string]: any;
-  };
-  status: string;
+  options: Record<string, string | string[]>;
+  status: 'pending' | 'preparing' | 'ready' | 'delivered';
 }
 
 export enum OrderStatus {
@@ -65,19 +61,12 @@ export enum OrderStatus {
 export interface Order {
   id: string;
   orderNumber: string;
-  status: string;
+  userId: string;
+  tableId: string;
   items: OrderItem[];
+  status: OrderStatus;
   total: number;
   createdAt: string;
-  updatedAt: string;
-  venueId: string;
-  tableId: string;
-  type: string;
-}
-
-export interface OrderStatusUpdate {
-  orderId: string;
-  status: OrderStatus;
   updatedAt: string;
 }
 
@@ -87,7 +76,7 @@ export interface Product {
   description: string;
   price: number;
   image?: string;
-  category: string;
+  categoryId: string;
   brand: string;
   status: 'available' | 'out_of_stock';
   section: string;
@@ -98,12 +87,7 @@ export interface Product {
     minimum: number;
     maximum: number;
   };
-  sizes: {
-    id: string;
-    name: string;
-    currentPrice: number;
-    isAvailable: boolean;
-  }[]
+  sizes: Size[];
 }
 
 export interface ProductCustomization {
@@ -162,6 +146,32 @@ export interface MenuCategory {
   isActive: boolean;
   parentCategoryId?: string;
   type: 'food' | 'beverage';
+}
+
+export interface ServiceRequest {
+  id: string;
+  tableId: string;
+  type: string;
+  status: 'pending' | 'completed' | 'cancelled';
+  createdAt: string;
+}
+
+export interface PreferenceOption {
+  value: string;
+  label: string;
+}
+
+export interface PreferenceOptions {
+  venues: PreferenceOption[];
+  musicGenres: PreferenceOption[];
+  events: PreferenceOption[];
+  drinks: PreferenceOption[];
+  crowdSizes: PreferenceOption[];
+  spendingHabits: PreferenceOption[];
+  atmospheres: PreferenceOption[];
+  nightOutFrequency: PreferenceOption[];
+  transportation: PreferenceOption[];
+  preferredNights: PreferenceOption[];
 }
 
 export interface Category {
@@ -301,4 +311,10 @@ export interface ReservationHistory {
   date: Date;
   revenue: number;
   rating: number;
+}
+
+export interface OrderStatusUpdate {
+  orderId: string;
+  status: OrderStatus;
+  updatedAt: string;
 }

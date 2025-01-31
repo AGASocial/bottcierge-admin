@@ -1,239 +1,175 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { Product, MenuCategory } from '../types';
-import type { AppDispatch } from '../store';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import {
+  MagnifyingGlassIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+import type { AppDispatch, RootState } from "../store";
+import {
+  getProducts,
+  getCategories,
+  deleteProduct,
+} from "../store/slices/menuSlice";
+import type { Product, MenuCategory } from "../types";
+import { getImageUrl } from "../utils/imageUtils";
 
 const Menu: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const { products, loading, categories } = useSelector(
+    (state: RootState) => state.menu
+  );
+  console.log('Menu state:', { products, loading, categories });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState("");
 
-  // TODO: Replace with actual Redux state
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: '1',
-      name: 'Classic Margarita',
-      description: 'Traditional margarita with lime and salt',
-      price: 12.99,
-      image: 'https://robohash.org/margarita.jpg',
-      category: 'cocktails',
-      brand: 'House Special',
-      status: 'available',
-      section: 'drinks',
-      brandId: 'brand1',
-      type: 'cocktail',
-      inventory: {
-        current: 100,
-        minimum: 20,
-        maximum: 200
-      },
-      sizes: [
-        {
-          id: 'size1',
-          name: 'Regular',
-          currentPrice: 12.99,
-          isAvailable: true
-        },
-        {
-          id: 'size2',
-          name: 'Large',
-          currentPrice: 15.99,
-          isAvailable: true
-        }
-      ]
+  useEffect(() => {
+    dispatch(getProducts());
+    dispatch(getCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (categories.length > 0 && !activeCategory) {
+      setActiveCategory(categories[0].id);
     }
-  ]);
+  }, [categories, activeCategory]);
 
-  const [categories] = useState<MenuCategory[]>([
-    {
-      id: 'cat1',
-      name: 'Cocktails',
-      code: 'cocktails',
-      displayOrder: 1,
-      isActive: true,
-      type: 'beverage'
-    }
-  ]);
-
-  const filteredProducts = products.filter(product => {
-    const matchesCategory = !selectedCategory || product.category === selectedCategory;
-    const matchesSearch = !searchTerm ||
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      !activeCategory || product.category === activeCategory;
+    return matchesSearch && matchesCategory;
   });
 
-  const handleUpdateProduct = (productId: string, updates: Partial<Product>) => {
-    setProducts(prevProducts =>
-      prevProducts.map(product =>
-        product.id === productId ? { ...product, ...updates } : product
-      )
-    );
-  };
-
-  const handleUpdateInventory = (
-    productId: string,
-    field: keyof Product['inventory'],
-    value: number
-  ) => {
-    const product = products.find(p => p.id === productId);
-    if (product) {
-      handleUpdateProduct(productId, {
-        inventory: {
-          ...product.inventory,
-          [field]: value
-        }
-      });
+  const handleDeleteProduct = async (productId: string) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      await dispatch(deleteProduct(productId));
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Menu Management</h1>
-      </div>
-
-      {/* Search and Filter */}
-      <div className="glass-card p-4 mb-8">
-        <div className="flex flex-col md:flex-row gap-4">
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="input-field flex-1"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <select
-            className="input-field md:w-48"
-            value={selectedCategory || ''}
-            onChange={(e) => setSelectedCategory(e.target.value || null)}
+    <div className="min-h-screen bg-deep-blue/100">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-white">Menu Management</h1>
+          <button
+            onClick={() => {
+              /* TODO: Implement new product creation */
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
-            <option value="">All Categories</option>
-            {categories.map(category => (
-              <option key={category.id} value={category.code}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+            Add New Product
+          </button>
         </div>
-      </div>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map(product => (
-          <div key={product.id} className="glass-card p-4">
-            {product.image && (
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-lg mb-4"
-              />
-            )}
-            <div className="space-y-2">
-              <div className="flex justify-between items-start">
-                <h3 className="text-lg font-semibold">{product.name}</h3>
-                <span className={`cursor-pointer px-2 py-1 rounded-full text-xs ${product.status === 'available' ? 'bg-green-500' : 'bg-red-500'
-                  }`} onClick={() => handleUpdateProduct(product.id, {
-                    status: product.status === 'available' ? 'out_of_stock' : 'available'
-                  })}>
-                  {product.status}
-                </span>
-              </div>
-              <p className="text-sm text-gray-300">{product.description}</p>
+        {/* Search and Category Filter */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-blue-900/50 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            <button
+              onClick={() => setActiveCategory("")}
+              className={`px-4 py-2 rounded whitespace-nowrap ${
+                activeCategory === ""
+                  ? "bg-blue-500 text-white"
+                  : "bg-blue-900/50 text-white hover:bg-blue-800/50"
+              }`}
+            >
+              All
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setActiveCategory(category.id)}
+                className={`px-4 py-2 rounded whitespace-nowrap ${
+                  activeCategory === category.id
+                    ? "bg-blue-500 text-white"
+                    : "bg-blue-900/50 text-white hover:bg-blue-800/50"
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
 
-              {/* Inventory Management */}
-              <div className="mt-4 space-y-2">
-                <h4 className="font-semibold">Inventory</h4>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="text-xs text-gray-400">Current</label>
-                    <input
-                      type="number"
-                      className="input-field w-full"
-                      value={product.inventory.current}
-                      onChange={(e) => handleUpdateInventory(
-                        product.id,
-                        'current',
-                        parseInt(e.target.value)
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-400">Min</label>
-                    <input
-                      type="number"
-                      className="input-field w-full"
-                      value={product.inventory.minimum}
-                      onChange={(e) => handleUpdateInventory(
-                        product.id,
-                        'minimum',
-                        parseInt(e.target.value)
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-400">Max</label>
-                    <input
-                      type="number"
-                      className="input-field w-full"
-                      value={product.inventory.maximum}
-                      onChange={(e) => handleUpdateInventory(
-                        product.id,
-                        'maximum',
-                        parseInt(e.target.value)
-                      )}
-                    />
+        {loading ? (
+          <div className="text-center text-white">Loading...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-card p-6"
+              >
+                <div className="relative mb-4">
+                  <img
+                    src={getImageUrl(product.image)}
+                    alt={product.name}
+                    className="w-full h-48 object-cover rounded"
+                  />
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <button
+                      onClick={() => {
+                        /* TODO: Implement edit */
+                      }}
+                      className="p-2 bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+                    >
+                      <PencilIcon className="h-5 w-5 text-white" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(product.id)}
+                      className="p-2 bg-red-500 rounded hover:bg-red-600 transition-colors"
+                    >
+                      <TrashIcon className="h-5 w-5 text-white" />
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              {/* Sizes and Pricing */}
-              <div className="mt-4">
-                <h4 className="font-semibold mb-2">Sizes & Pricing</h4>
-                {product.sizes.map(size => (
-                  <div key={size.id} className="flex justify-between items-center mb-2">
-                    <span>{size.name}</span>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="number"
-                        className="input-field w-24"
-                        value={size.currentPrice}
-                        onChange={(e) => {
-                          const newSizes = product.sizes.map(s =>
-                            s.id === size.id
-                              ? { ...s, currentPrice: parseFloat(e.target.value) }
-                              : s
-                          );
-                          handleUpdateProduct(product.id, { sizes: newSizes });
-                        }}
-                      />
-                      <button
-                        className={`px-2 py-1 rounded ${size.isAvailable
-                          ? 'bg-green-500 hover:bg-green-600'
-                          : 'bg-red-500 hover:bg-red-600'
-                          }`}
-                        onClick={() => {
-                          const newSizes = product.sizes.map(s =>
-                            s.id === size.id
-                              ? { ...s, isAvailable: !s.isAvailable }
-                              : s
-                          );
-                          handleUpdateProduct(product.id, { sizes: newSizes });
-                        }}
-                      >
-                        {size.isAvailable ? 'Available' : 'Unavailable'}
-                      </button>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  {product.name}
+                </h3>
+                <p className="text-gray-300 mb-4">{product.description}</p>
+                <div className="space-y-2">
+                  {product.sizes.map((size) => (
+                    <div
+                      key={size.id}
+                      className="flex justify-between items-center"
+                    >
+                      <span className="text-gray-300">{size.name}</span>
+                      <span className="text-white font-bold">
+                        ${size.currentPrice.toFixed(2)}
+                      </span>
                     </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Category</span>
+                    <span className="text-white">
+                      {
+                        categories.find((c) => c.id === product.category)
+                          ?.name
+                      }
+                    </span>
                   </div>
-                ))}
-              </div>
-
-              <div className="mt-4 flex justify-end space-x-2">
-              </div>
-            </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

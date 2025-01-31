@@ -1,5 +1,5 @@
 import api from './api';
-import { Order, OrderStatus } from '../types';
+import type { Order, OrderStatus } from '../types';
 
 export const orderService = {
   // Get all orders
@@ -34,7 +34,7 @@ export const orderService = {
   // Cancel order
   cancelOrder: async (orderId: string) => {
     const response = await api.patch(`/orders/${orderId}`, {
-      status: OrderStatus.CANCELLED
+      status: 'cancelled' as const
     });
     return response.data;
   }

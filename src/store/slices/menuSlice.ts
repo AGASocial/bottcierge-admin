@@ -34,14 +34,6 @@ export const getProducts = createAsyncThunk(
   }
 );
 
-export const getProductById = createAsyncThunk(
-  'menu/getProductById',
-  async (productId: string) => {
-    const response = await api.get(`/menu/products/${productId}`);
-    return response.data;
-  }
-);
-
 export const updateProduct = createAsyncThunk(
   'menu/updateProduct',
   async ({ id, data }: { id: string; data: Partial<Product> }) => {
@@ -50,11 +42,19 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
-export const updateProductInventory = createAsyncThunk(
-  'menu/updateInventory',
-  async ({ id, inventory }: { id: string; inventory: { current: number } }) => {
-    const response = await api.patch(`/menu/products/${id}/inventory`, inventory);
+export const createProduct = createAsyncThunk(
+  'menu/createProduct',
+  async (data: Omit<Product, 'id'>) => {
+    const response = await api.post('/menu/products', data);
     return response.data;
+  }
+);
+
+export const deleteProduct = createAsyncThunk(
+  'menu/deleteProduct',
+  async (id: string) => {
+    await api.delete(`/menu/products/${id}`);
+    return id;
   }
 );
 
@@ -70,8 +70,8 @@ const menuSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // Get Categories
     builder
-      // Get Categories
       .addCase(getCategories.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -83,8 +83,10 @@ const menuSlice = createSlice({
       .addCase(getCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch categories';
-      })
-      // Get Products
+      });
+
+    // Get Products
+    builder
       .addCase(getProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -96,51 +98,27 @@ const menuSlice = createSlice({
       .addCase(getProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch products';
-      })
-      // Get Product by ID
-      .addCase(getProductById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getProductById.fulfilled, (state, action) => {
-        state.loading = false;
-        state.selectedProduct = action.payload;
-      })
-      .addCase(getProductById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch product';
-      })
-      // Update Product
-      .addCase(updateProduct.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+      });
+
+    // Update Product
+    builder
       .addCase(updateProduct.fulfilled, (state, action) => {
-        state.loading = false;
         const index = state.products.findIndex(p => p.id === action.payload.id);
         if (index !== -1) {
           state.products[index] = action.payload;
         }
-      })
-      .addCase(updateProduct.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to update product';
-      })
-      // Update Product Inventory
-      .addCase(updateProductInventory.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateProductInventory.fulfilled, (state, action) => {
-        state.loading = false;
-        const index = state.products.findIndex(p => p.id === action.payload.id);
-        if (index !== -1) {
-          state.products[index] = action.payload;
-        }
-      })
-      .addCase(updateProductInventory.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to update inventory';
+      });
+
+    // Create Product
+    builder
+      .addCase(createProduct.fulfilled, (state, action) => {
+        state.products.push(action.payload);
+      });
+
+    // Delete Product
+    builder
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.products = state.products.filter(p => p.id !== action.payload);
       });
   },
 });
