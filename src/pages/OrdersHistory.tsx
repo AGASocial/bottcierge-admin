@@ -55,7 +55,7 @@ const Orders: React.FC = () => {
       key={order.id}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-black bg-white rounded-lg shadow-md p-6 mb-4"
+      className="glass-card p-6 text-white"
     >
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -63,7 +63,7 @@ const Orders: React.FC = () => {
             <h3 className="text-xl font-bold">Order #{order.orderNumber}</h3>
             <OrderStatusBadge status={order.status as OrderStatus} />
           </div>
-          <div className="flex items-center space-x-2 text-gray-500">
+          <div className="flex items-center space-x-2 text-gray-300">
             <ClockIcon className="w-4 h-4" />
             <span>{new Date(order.createdAt).toLocaleString()}</span>
           </div>
@@ -73,21 +73,21 @@ const Orders: React.FC = () => {
         </div>
       </div>
 
-      <div className="border-t pt-4">
-        <h4 className="font-medium mb-2">Items</h4>
+      <div className="border-t border-white/10 pt-4">
+        <h4 className="font-medium mb-2 text-gray-300">Items</h4>
         <div className="space-y-2">
           {order.items.map((item) => (
             <div
               key={item.id}
-              className="flex justify-between items-center"
+              className="flex justify-between items-center p-2 rounded-lg hover:bg-blue-900/30 transition-colors duration-150"
             >
               <div>
-                <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-medium text-white">{item.name}</p>
+                <p className="text-sm text-gray-300">
                   Qty: {item.quantity}
                 </p>
               </div>
-              <p>${(item.price * item.quantity).toFixed(2)}</p>
+              <p className="text-white">${(item.price * item.quantity).toFixed(2)}</p>
             </div>
           ))}
         </div>
@@ -96,50 +96,52 @@ const Orders: React.FC = () => {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Orders History</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded ${filter === 'all'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-100 hover:bg-gray-200 text-black'
-            }`}
-          >
-            All
-          </button>
-          {statusOrder.map(status => (
+    <div className="min-h-screen bg-deep-blue/100">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-white">Orders History</h1>
+          <div className="flex gap-2">
             <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded ${filter === status
+              onClick={() => setFilter('all')}
+              className={`px-4 py-2 rounded ${filter === 'all'
                 ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 hover:bg-gray-200 text-black'
+                : 'bg-blue-900/50 hover:bg-blue-800/50 text-white'
               }`}
             >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              All
             </button>
-          ))}
+            {statusOrder.map(status => (
+              <button
+                key={status}
+                onClick={() => setFilter(status)}
+                className={`px-4 py-2 rounded ${filter === status
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-blue-900/50 hover:bg-blue-800/50 text-white'
+                }`}
+              >
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="space-y-8">
-        {filteredStatuses.map(status => {
-          const statusOrders = groupedOrders[status] || [];
-          if (statusOrders.length === 0) return null;
+        <div className="space-y-8">
+          {filteredStatuses.map(status => {
+            const statusOrders = groupedOrders[status] || [];
+            if (statusOrders.length === 0) return null;
 
-          return (
-            <div key={status} className="bg-gray-800 rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-4 text-white">
-                {status.charAt(0).toUpperCase() + status.slice(1)} Orders ({statusOrders.length})
-              </h2>
-              <div className="space-y-4">
-                {statusOrders.map(renderOrder)}
+            return (
+              <div key={status} className="glass-card p-6 rounded-lg">
+                <h2 className="text-xl font-bold mb-4 text-white">
+                  {status.charAt(0).toUpperCase() + status.slice(1)} Orders ({statusOrders.length})
+                </h2>
+                <div className="space-y-4">
+                  {statusOrders.map(renderOrder)}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
