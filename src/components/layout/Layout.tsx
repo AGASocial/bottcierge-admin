@@ -16,7 +16,7 @@ import type { RootState } from '../../store';
 const Layout: React.FC = () => {
   const location = useLocation();
   const newOrdersCount = useSelector((state: RootState) =>
-    state.order.orderHistory.filter(order => order.status === 'created').length
+    state.order.orderHistory.filter(order => order.status === 'paid').length
   );
 
   const menuItems = [
@@ -56,7 +56,7 @@ const Layout: React.FC = () => {
                 <Link
                   key={path}
                   to={path}
-                  className={`relative flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive ? 'text-menu-active' : 'text-gray-400 hover:text-menu-hover'
+                  className={`relative flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive ? 'text-menu-active' : 'text-gray-400 hover:text-light-blue'
                     }`}
                 >
                   <Icon className="w-6 h-6" />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { Order, OrderStatus } from "../types";
+import { Order, OrderStatus, OrderStatusType } from "../types";
 import {
   ORDER_STATUS_COLORS,
   ORDER_STATUS_SEQUENCE,
@@ -58,10 +58,11 @@ const Home: React.FC = () => {
     };
 
     // Listen for order status updates
-    const handleStatusUpdate = (
-      update: Omit<OrderStatusUpdate, "updatedAt">
-    ) => {
-      const completeUpdate: OrderStatusUpdate = {
+    const handleStatusUpdate = (update: {
+      orderId: string;
+      status: OrderStatus;
+    }) => {
+      const completeUpdate = {
         ...update,
         updatedAt: new Date().toISOString(),
       };
@@ -100,7 +101,7 @@ const Home: React.FC = () => {
     setGroupedOrders(grouped);
   }, [orderHistory]);
 
-  const getStatusColor = (status: OrderStatus): string => {
+  const getStatusColor = (status: OrderStatusType): string => {
     return ORDER_STATUS_COLORS[status];
   };
 

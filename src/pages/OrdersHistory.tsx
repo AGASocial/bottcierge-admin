@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
-import { ClockIcon } from '@heroicons/react/24/outline';
-import { getOrders } from '../store/slices/orderSlice';
-import type { AppDispatch, RootState } from '../store';
-import { Order, OrderStatus } from '../types';
-import { ORDER_STATUS_COLORS, ORDER_STATUS_SEQUENCE } from '../utils/orderConstants';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { ClockIcon } from "@heroicons/react/24/outline";
+import { getOrders } from "../store/slices/orderSlice";
+import type { AppDispatch, RootState } from "../store";
+import { Order, OrderStatus, OrderStatusType } from "../types";
+import {
+  ORDER_STATUS_COLORS,
+  ORDER_STATUS_SEQUENCE,
+} from "../utils/orderConstants";
 
 const OrderStatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => {
   return (
-    <span className={`px-2 py-1 text-white rounded-full text-sm ${ORDER_STATUS_COLORS[status as OrderStatus]}`}>
+    <span
+      className={`px-2 py-1 text-white rounded-full text-sm ${
+        ORDER_STATUS_COLORS[status as OrderStatus]
+      }`}
+    >
       {status}
     </span>
   );
@@ -17,26 +24,33 @@ const OrderStatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => {
 
 const Orders: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { orderHistory: orders, loading, error } = useSelector((state: RootState) => state.order);
-  const [filter, setFilter] = useState<OrderStatus | 'all'>('all');
+  const {
+    orderHistory: orders,
+    loading,
+    error,
+  } = useSelector((state: RootState) => state.order);
+  const [filter, setFilter] = useState<OrderStatusType>("all" as OrderStatusType);
 
   useEffect(() => {
     dispatch(getOrders());
   }, [dispatch]);
 
-  const groupedOrders = orders.reduce((acc: Record<OrderStatus, Order[]>, order: Order) => {
-    const status = order.status as OrderStatus;
-    if (!acc[status]) {
-      acc[status] = [];
-    }
-    acc[status].push(order);
-    return acc;
-  }, {} as Record<OrderStatus, Order[]>);
+  const groupedOrders = orders.reduce(
+    (acc: Record<OrderStatus, Order[]>, order: Order) => {
+      const status = order.status as OrderStatus;
+      if (!acc[status]) {
+        acc[status] = [];
+      }
+      acc[status].push(order);
+      return acc;
+    },
+    {} as Record<OrderStatus, Order[]>
+  );
 
   const statusOrder = ORDER_STATUS_SEQUENCE;
 
-  const filteredStatuses = statusOrder.filter(status => {
-    if (filter === 'all') {
+  const filteredStatuses = statusOrder.filter((status) => {
+    if (filter === ("all" as OrderStatus)) {
       return true;
     }
     return status === filter;
@@ -83,11 +97,11 @@ const Orders: React.FC = () => {
             >
               <div>
                 <p className="font-medium text-white">{item.name}</p>
-                <p className="text-sm text-gray-300">
-                  Qty: {item.quantity}
-                </p>
+                <p className="text-sm text-gray-300">Qty: {item.quantity}</p>
               </div>
-              <p className="text-white">${(item.price * item.quantity).toFixed(2)}</p>
+              <p className="text-white">
+                ${(item.price * item.quantity).toFixed(2)}
+              </p>
             </div>
           ))}
         </div>
@@ -102,21 +116,23 @@ const Orders: React.FC = () => {
           <h1 className="text-2xl font-bold text-white">Orders History</h1>
           <div className="flex gap-2">
             <button
-              onClick={() => setFilter('all')}
-              className={`px-4 py-2 rounded ${filter === 'all'
-                ? 'bg-blue-500 text-white'
-                : 'bg-blue-900/50 hover:bg-blue-800/50 text-white'
+              onClick={() => setFilter("all" as OrderStatus)}
+              className={`px-4 py-2 rounded ${
+                filter === "all" as OrderStatus
+                  ? "bg-blue-500 text-white"
+                  : "bg-blue-900/50 hover:bg-blue-800/50 text-white"
               }`}
             >
               All
             </button>
-            {statusOrder.map(status => (
+            {statusOrder.map((status) => (
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`px-4 py-2 rounded ${filter === status
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-blue-900/50 hover:bg-blue-800/50 text-white'
+                className={`px-4 py-2 rounded ${
+                  filter === status
+                    ? "bg-blue-500 text-white"
+                    : "bg-blue-900/50 hover:bg-blue-800/50 text-white"
                 }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -126,18 +142,17 @@ const Orders: React.FC = () => {
         </div>
 
         <div className="space-y-8">
-          {filteredStatuses.map(status => {
+          {filteredStatuses.map((status) => {
             const statusOrders = groupedOrders[status] || [];
             if (statusOrders.length === 0) return null;
 
             return (
               <div key={status} className="glass-card p-6 rounded-lg">
                 <h2 className="text-xl font-bold mb-4 text-white">
-                  {status.charAt(0).toUpperCase() + status.slice(1)} Orders ({statusOrders.length})
+                  {status.charAt(0).toUpperCase() + status.slice(1)} Orders (
+                  {statusOrders.length})
                 </h2>
-                <div className="space-y-4">
-                  {statusOrders.map(renderOrder)}
-                </div>
+                <div className="space-y-4">{statusOrders.map(renderOrder)}</div>
               </div>
             );
           })}

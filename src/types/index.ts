@@ -58,6 +58,8 @@ export enum OrderStatus {
   CANCELLED = 'cancelled'
 }
 
+export type OrderStatusType = 'draft' | 'paid' | 'accepted' | 'preparing' | 'serving' | 'completed' | 'cancelled';
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -76,7 +78,7 @@ export interface Product {
   description: string;
   price: number;
   image?: string;
-  categoryId: string;
+  category: string;
   brand: string;
   status: 'available' | 'out_of_stock';
   section: string;
