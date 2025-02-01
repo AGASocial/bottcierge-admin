@@ -1,6 +1,6 @@
-import React from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   QrCodeIcon,
   UserCircleIcon,
@@ -8,34 +8,49 @@ import {
   TableCellsIcon,
   RectangleGroupIcon,
   QueueListIcon,
-  ArchiveBoxIcon
-} from '@heroicons/react/24/outline';
-import Badge from '../common/Badge';
-import type { RootState } from '../../store';
+  ArchiveBoxIcon,
+} from "@heroicons/react/24/outline";
+import Badge from "../common/Badge";
+import type { RootState } from "../../store";
 
 const Layout: React.FC = () => {
   const location = useLocation();
-  const newOrdersCount = useSelector((state: RootState) =>
-    state.order.orderHistory.filter(order => order.status === 'paid').length
+  const newOrdersCount = useSelector(
+    (state: RootState) =>
+      state.order.orderHistory.filter((order) => order.status === "paid").length
   );
 
   const menuItems = [
-    { path: '/', icon: RectangleGroupIcon, label: 'Orders', badge: newOrdersCount },
     {
-      path: '/tables',
+      path: "/",
+      icon: RectangleGroupIcon,
+      label: "Orders",
+      badge: newOrdersCount,
+    },
+    {
+      path: "/tables",
       icon: TableCellsIcon,
-      label: 'Tables',
-      badge: 0
+      label: "Tables",
+      badge: 0,
     },
     {
-      path: '/servers', icon: UsersIcon, label: 'Servers', badge: 0
+      path: "/servers",
+      icon: UsersIcon,
+      label: "Servers",
+      badge: 0,
     },
     {
-      path: '/menu', icon: QueueListIcon, label: 'Menu', badge: 0
+      path: "/menu",
+      icon: QueueListIcon,
+      label: "Menu",
+      badge: 0,
     },
-    { path: '/orders', icon: ArchiveBoxIcon, label: 'History', badge: 0 },
+    { path: "/orders", icon: ArchiveBoxIcon, label: "History", badge: 0 },
     {
-      path: '/profile', icon: UserCircleIcon, label: 'Profile', badge: 0
+      path: "/profile",
+      icon: UserCircleIcon,
+      label: "Profile",
+      badge: 0,
     },
   ];
 
@@ -56,8 +71,11 @@ const Layout: React.FC = () => {
                 <Link
                   key={path}
                   to={path}
-                  className={`relative flex flex-col items-center space-y-1 transition-colors duration-200 ${isActive ? 'text-menu-active' : 'text-gray-400 hover:text-light-blue'
-                    }`}
+                  className={`relative flex flex-col items-center space-y-1 transition-colors duration-200 ${
+                    isActive
+                      ? "text-menu-active"
+                      : "text-gray-400 hover:text-light-blue"
+                  }`}
                 >
                   <Icon className="w-6 h-6" />
                   <span className="text-xs font-medium">{label}</span>

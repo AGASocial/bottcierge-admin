@@ -10,12 +10,9 @@ import {
 import {
   fetchOrders,
   updateOrderStatus,
-  updateOrderStatusSocket,
-  addNewPaidOrders,
 } from "../store/slices/orderSlice";
 import type { AppDispatch } from "../store";
 import Dialog from "../components/common/Dialog";
-import { socketService } from "../services/socketService";
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -40,51 +37,7 @@ const Home: React.FC = () => {
 
   // Initial fetch of orders
   useEffect(() => {
-    console.log("Fetching orders...");
     dispatch(fetchOrders());
-
-    // Set up socket connection and subscriptions
-    socketService.connect();
-
-    // Subscribe to all orders
-    const handleOrders = (orders: Order[]) => {
-      // Only handle new PAID orders from socket
-      const paidOrders = orders.filter((order) => order.status === "paid");
-      if (paidOrders.length > 0) {
-        console.log("Received new PAID orders:", paidOrders);
-        // Merge paid orders with existing orders
-        dispatch(addNewPaidOrders(paidOrders));
-      }
-    };
-
-    // Listen for order status updates
-    const handleStatusUpdate = (update: {
-      orderId: string;
-      status: OrderStatus;
-    }) => {
-      const completeUpdate = {
-        ...update,
-        updatedAt: new Date().toISOString(),
-      };
-
-      console.log("Order status updated2:", completeUpdate);
-      if (completeUpdate.status === "paid") {
-        // For PAID status, we add it directly via socket
-        dispatch(updateOrderStatusSocket(completeUpdate));
-      } else {
-        // For other status changes, refresh via API to ensure consistency
-        dispatch(fetchOrders());
-      }
-    };
-
-    socketService.subscribeToAllOrders(handleOrders);
-    const cleanup = socketService.onOrderStatusUpdate(handleStatusUpdate);
-
-    return () => {
-      cleanup();
-      socketService.unsubscribeFromAllOrders();
-      socketService.disconnect();
-    };
   }, [dispatch]);
 
   // Filter orders by status whenever orderHistory changes

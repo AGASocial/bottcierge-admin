@@ -20,7 +20,7 @@ const Menu: React.FC = () => {
   const { products, loading, categories } = useSelector(
     (state: RootState) => state.menu
   );
-  console.log('Menu state:', { products, loading, categories });
+
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("");
 
