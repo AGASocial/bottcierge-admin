@@ -18,7 +18,9 @@ const Servers: React.FC = () => {
       [ServerStatus.ACTIVE]: 'bg-green-500',
       [ServerStatus.INACTIVE]: 'bg-gray-500',
       [ServerStatus.ON_BREAK]: 'bg-yellow-500',
-      [ServerStatus.OFF_DUTY]: 'bg-red-500'
+      [ServerStatus.OFF_DUTY]: 'bg-red-500',
+      [ServerStatus.SICK]: 'bg-blue-500',
+      [ServerStatus.VACATION]: 'bg-purple-500'
     };
     return colors[status];
   };

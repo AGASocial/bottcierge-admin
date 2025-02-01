@@ -100,10 +100,13 @@ export interface ProductCustomization {
 }
 
 export enum ServerStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  ON_BREAK = 'ON_BREAK',
-  OFF_DUTY = 'OFF_DUTY'
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
+  ON_BREAK = 'On Break',
+  OFF_DUTY = 'Off Duty',
+  SICK = 'Sick',
+  VACATION = 'Vacation'
+  
 }
 
 export interface ServerSection {

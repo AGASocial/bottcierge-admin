@@ -37,7 +37,7 @@ export const getProducts = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
   'menu/updateProduct',
   async ({ id, data }: { id: string; data: Partial<Product> }) => {
-    const response = await api.put(`/menu/products/${id}`, data);
+    const response = await api.put(`/menu/product/${id}`, data);
     return response.data;
   }
 );
@@ -53,7 +53,7 @@ export const createProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   'menu/deleteProduct',
   async (id: string) => {
-    await api.delete(`/menu/products/${id}`);
+    await api.delete(`/menu/product/${id}`);
     return id;
   }
 );
