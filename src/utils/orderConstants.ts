@@ -23,4 +23,28 @@ export const ORDER_STATUS_SEQUENCE = [
 // Terminal states that don't proceed to next status
 export const TERMINAL_STATUSES: OrderStatusType[] = ["completed", "cancelled"];
 
+export const getDayName = (dayNumber: number) => {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  return days[dayNumber] || "Unknown";
+};
+
+export const formatTime = (timeString: string) => {
+  const hours = parseInt(timeString.substring(0, 2));
+  const minutes = timeString.substring(2);
+  if(!hours || !minutes) return "";
+  return new Date(0, 0, 0, hours, parseInt(minutes)).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+};
+
 // You can add more order-related constants here in the future

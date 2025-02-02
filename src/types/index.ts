@@ -2,12 +2,12 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'staff' | 'customer';
+  role: "admin" | "staff" | "customer";
 }
 
 export interface PaymentMethod {
   id: string;
-  type: 'credit_card' | 'apple_pay' | 'google_pay';
+  type: "credit_card" | "apple_pay" | "google_pay";
   lastFour: string;
   token: string;
   isDefault: boolean;
@@ -45,20 +45,27 @@ export interface OrderItem {
   quantity: number;
   size: Size;
   options: Record<string, string | string[]>;
-  status: 'pending' | 'preparing' | 'ready' | 'delivered';
+  status: "pending" | "preparing" | "ready" | "delivered";
 }
 
 export enum OrderStatus {
-  DRAFT = 'draft',
-  PAID = 'paid',
-  ACCEPTED = 'accepted',
-  PREPARING = 'preparing',
-  SERVING = 'serving',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
+  DRAFT = "draft",
+  PAID = "paid",
+  ACCEPTED = "accepted",
+  PREPARING = "preparing",
+  SERVING = "serving",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
 }
 
-export type OrderStatusType = 'draft' | 'paid' | 'accepted' | 'preparing' | 'serving' | 'completed' | 'cancelled';
+export type OrderStatusType =
+  | "draft"
+  | "paid"
+  | "accepted"
+  | "preparing"
+  | "serving"
+  | "completed"
+  | "cancelled";
 
 export interface Order {
   id: string;
@@ -80,7 +87,7 @@ export interface Product {
   image?: string;
   category: string;
   brand: string;
-  status: 'available' | 'out_of_stock';
+  status: "available" | "out_of_stock";
   section: string;
   brandId: string;
   type: string;
@@ -99,22 +106,6 @@ export interface ProductCustomization {
   options: string[];
 }
 
-export enum ServerStatus {
-  ACTIVE = 'Active',
-  INACTIVE = 'Inactive',
-  ON_BREAK = 'On Break',
-  OFF_DUTY = 'Off Duty',
-  SICK = 'Sick',
-  VACATION = 'Vacation'
-  
-}
-
-export interface ServerSection {
-  id: string;
-  name: string;
-  description: string;
-}
-
 export interface ServerMetrics {
   ordersServed: number;
   averageRating: number;
@@ -126,23 +117,6 @@ export interface ServerMetrics {
   };
 }
 
-export interface Server {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  status: ServerStatus;
-  sections: ServerSection[];
-  metrics: ServerMetrics;
-  startDate: string;
-  schedule: {
-    start: string;
-    end: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface MenuCategory {
   id: string;
   name: string;
@@ -150,14 +124,14 @@ export interface MenuCategory {
   displayOrder: number;
   isActive: boolean;
   parentCategoryId?: string;
-  type: 'food' | 'beverage';
+  type: "food" | "beverage";
 }
 
 export interface ServiceRequest {
   id: string;
   tableId: string;
   type: string;
-  status: 'pending' | 'completed' | 'cancelled';
+  status: "pending" | "completed" | "cancelled";
   createdAt: string;
 }
 
@@ -193,7 +167,7 @@ export interface Section {
   id: string;
   name: string;
   description?: string;
-  type: 'VIP' | 'DANCE_FLOOR' | 'BAR' | 'GENERAL';
+  type: "VIP" | "DANCE_FLOOR" | "BAR" | "GENERAL";
   isActive: boolean;
   tables: Table[];
   position: {
@@ -207,14 +181,14 @@ export interface Section {
 export interface Table {
   id: string;
   number: string;
-  status: 'available' | 'occupied' | 'reserved';
+  status: "available" | "occupied" | "reserved";
   x: number;
   y: number;
   capacity: number;
   sectionId: string;
   minimumSpend: number;
   notes?: string;
-  shape: 'round' | 'square' | 'rectangle';
+  shape: "round" | "square" | "rectangle";
   width: number;
   height: number;
 }
@@ -289,17 +263,36 @@ export interface VenueEvent {
 
 export interface Staff {
   id: string;
+  badgeNumber: string;
   firstName: string;
   lastName: string;
-  role: 'manager' | 'server' | 'bartender';
+  venueId: string;
+  email: string;
+  phoneNumber: string;
+  role: "manager" | "server" | "bartender";
   sections: string[];
   isActive: boolean;
-  status: 'active' | 'inactive';
+  status: StaffStatus;
   metrics: {
     averageRating: number;
     ordersServed: number;
     salesVolume: number;
+    totalSales: number;
   };
+  schedule: {
+    dayOfWeek: number;
+    start: string;
+    end: string;
+  }[];
+}
+
+export enum StaffStatus {
+  ACTIVE = "Active",
+  INACTIVE = "Inactive",
+  ON_BREAK = "On Break",
+  OFF_DUTY = "Off Duty",
+  SICK = "Sick",
+  VACATION = "Vacation",
 }
 
 export interface TableReservation {

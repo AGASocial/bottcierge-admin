@@ -34,9 +34,9 @@ const Layout: React.FC = () => {
       badge: 0,
     },
     {
-      path: "/servers",
+      path: "/staff",
       icon: UsersIcon,
-      label: "Servers",
+      label: "Staff",
       badge: 0,
     },
     {

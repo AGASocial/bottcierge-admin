@@ -1,8 +1,9 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { BuildingStorefrontIcon } from '@heroicons/react/24/outline';
-import type { RootState } from '../store';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { BuildingStorefrontIcon } from "@heroicons/react/24/outline";
+import type { RootState } from "../store";
+import { setRandomVenue } from "../store/slices/venueSlice";
 
 const BusinessInfo: React.FC = () => {
   const navigate = useNavigate();
@@ -11,11 +12,11 @@ const BusinessInfo: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Save business info
-    navigate('/profile');
+    navigate("/profile");
   };
 
   const handleCancel = () => {
-    navigate('/profile');
+    navigate("/profile");
   };
 
   return (
@@ -25,20 +26,26 @@ const BusinessInfo: React.FC = () => {
           <BuildingStorefrontIcon className="w-8 h-8" />
           <h1 className="text-2xl font-bold">Business Information</h1>
         </div>
+        <pre className="p-4 rounded-md">
+          <code>{JSON.stringify(currentVenue, null, 2)}</code>
+        </pre>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="glass-card p-6">
             <div className="space-y-6">
               {/* Business Name */}
               <div>
-                <label htmlFor="businessName" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="businessName"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Business Name
                 </label>
                 <input
                   type="text"
                   id="businessName"
                   name="businessName"
-                  defaultValue={currentVenue?.name || ''}
+                  defaultValue={currentVenue?.name || ""}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                   required
                 />
@@ -46,14 +53,17 @@ const BusinessInfo: React.FC = () => {
 
               {/* Address */}
               <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Address
                 </label>
                 <input
                   type="text"
                   id="address"
                   name="address"
-                  defaultValue={currentVenue?.address || ''}
+                  defaultValue={currentVenue?.address || ""}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                   required
                 />
@@ -61,13 +71,16 @@ const BusinessInfo: React.FC = () => {
 
               {/* Description */}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Description
                 </label>
                 <textarea
                   id="description"
                   name="description"
-                  defaultValue={currentVenue?.description || ''}
+                  defaultValue={currentVenue?.description || ""}
                   rows={4}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                 />
@@ -75,14 +88,17 @@ const BusinessInfo: React.FC = () => {
 
               {/* Contact Information */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   id="phone"
                   name="phone"
-                  defaultValue={currentVenue?.phone || ''}
+                  defaultValue={currentVenue?.phone || ""}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                   required
                 />
@@ -90,14 +106,17 @@ const BusinessInfo: React.FC = () => {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Business Email
                 </label>
                 <input
                   type="email"
                   id="email"
                   name="email"
-                  defaultValue={currentVenue?.email || ''}
+                  defaultValue={currentVenue?.email || ""}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                   required
                 />
@@ -105,14 +124,17 @@ const BusinessInfo: React.FC = () => {
 
               {/* Website*/}
               <div>
-                <label htmlFor="website" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="website"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Website
                 </label>
                 <input
                   type="url"
                   id="website"
                   name="website"
-                  defaultValue={currentVenue?.website || ''}
+                  defaultValue={currentVenue?.website || ""}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                 />
               </div>
@@ -125,14 +147,17 @@ const BusinessInfo: React.FC = () => {
                 <div className="space-y-4">
                   {/* Facebook */}
                   <div>
-                    <label htmlFor="facebook" className="block text-sm text-gray-400 mb-2">
+                    <label
+                      htmlFor="facebook"
+                      className="block text-sm text-gray-400 mb-2"
+                    >
                       Facebook URL
                     </label>
                     <input
                       type="url"
                       id="facebook"
                       name="facebook"
-                      defaultValue={currentVenue?.socialMedia?.facebook || ''}
+                      defaultValue={currentVenue?.socialMedia?.facebook || ""}
                       placeholder="https://www.facebook.com/yourpage"
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                     />
@@ -140,14 +165,17 @@ const BusinessInfo: React.FC = () => {
 
                   {/* Instagram */}
                   <div>
-                    <label htmlFor="instagram" className="block text-sm text-gray-400 mb-2">
+                    <label
+                      htmlFor="instagram"
+                      className="block text-sm text-gray-400 mb-2"
+                    >
                       Instagram URL
                     </label>
                     <input
                       type="url"
                       id="instagram"
                       name="instagram"
-                      defaultValue={currentVenue?.socialMedia?.instagram || ''}
+                      defaultValue={currentVenue?.socialMedia?.instagram || ""}
                       placeholder="https://www.instagram.com/yourpage"
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                     />
@@ -155,14 +183,17 @@ const BusinessInfo: React.FC = () => {
 
                   {/* Twitter */}
                   <div>
-                    <label htmlFor="twitter" className="block text-sm text-gray-400 mb-2">
+                    <label
+                      htmlFor="twitter"
+                      className="block text-sm text-gray-400 mb-2"
+                    >
                       Twitter URL
                     </label>
                     <input
                       type="url"
                       id="twitter"
                       name="twitter"
-                      defaultValue={currentVenue?.socialMedia?.twitter || ''}
+                      defaultValue={currentVenue?.socialMedia?.twitter || ""}
                       placeholder="https://twitter.com/yourpage"
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                     />

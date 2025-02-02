@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   UserGroupIcon,
   ChartBarIcon,
   ClockIcon,
   CurrencyDollarIcon,
-} from '@heroicons/react/24/outline';
-import type { AppDispatch, RootState } from '../../store';
-import { updateStaffStatus, fetchVenueMetrics } from '../../store/slices/venueSlice';
-import type { Staff, Section } from '../../types';
+} from "@heroicons/react/24/outline";
+import type { AppDispatch, RootState } from "../../store";
+import { fetchVenueMetrics } from "../../store/slices/venueSlice";
+import type { Staff, Section } from "../../types";
+import { updateStaffStatus } from "@/store/slices/staffSlice";
 
 interface StaffManagementProps {
   venueId: string;
@@ -17,7 +18,8 @@ interface StaffManagementProps {
 
 const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { staff, sections, metrics } = useSelector((state: RootState) => state.venue);
+  const { sections, metrics } = useSelector((state: RootState) => state.venue);
+  const { staffMembers } = useSelector((state: RootState) => state.staff);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [showMetrics, setShowMetrics] = useState(false);
 
@@ -30,11 +32,14 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
   }, [dispatch, venueId]);
 
   const getStaffBySection = (sectionId: string) => {
-    return staff.filter((s: Staff) => s.sections.includes(sectionId));
+    return staffMembers.filter((s: Staff) => s.sections.includes(sectionId));
   };
 
-  const handleStatusChange = async (staffId: string, status: Staff['status'], sectionId?: string) => {
-    await dispatch(updateStaffStatus({ staffId, status, sectionId }));
+  const handleStatusChange = async (
+    staffId: string,
+    status: Staff["status"]
+  ) => {
+    await dispatch(updateStaffStatus({ staffId, status }));
   };
 
   const renderStaffMetrics = (staff: Staff) => {
@@ -45,7 +50,9 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
             <ChartBarIcon className="w-4 h-4" />
             <span className="text-sm">Rating</span>
           </div>
-          <p className="text-xl font-bold">{staff.metrics.averageRating.toFixed(1)}</p>
+          <p className="text-xl font-bold">
+            {staff.metrics.averageRating.toFixed(1)}
+          </p>
         </div>
         <div className="glass-card p-3">
           <div className="flex items-center space-x-2 text-electric-blue mb-1">
@@ -59,7 +66,9 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
             <CurrencyDollarIcon className="w-4 h-4" />
             <span className="text-sm">Sales</span>
           </div>
-          <p className="text-xl font-bold">${staff.metrics.salesVolume.toLocaleString()}</p>
+          <p className="text-xl font-bold">
+            ${staff.metrics.salesVolume.toLocaleString()}
+          </p>
         </div>
       </div>
     );
@@ -76,12 +85,16 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
     >
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-bold text-lg">{staff.firstName} {staff.lastName}</h3>
+          <h3 className="font-bold text-lg">
+            {staff.firstName} {staff.lastName}
+          </h3>
           <p className="text-gray-300 text-sm">{staff.role}</p>
         </div>
         <select
           value={staff.status}
-          onChange={(e) => handleStatusChange(staff.id, e.target.value as Staff['status'])}
+          onChange={(e) =>
+            handleStatusChange(staff.id, e.target.value as Staff["status"])
+          }
           className="input-field text-sm"
         >
           <option value="active">Active</option>
@@ -98,23 +111,25 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
       key={section.id}
       onClick={() => setSelectedSection(section.id)}
       className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-        selectedSection === section.id ? 'bg-electric-blue' : 'glass-card hover:bg-white/20'
+        selectedSection === section.id
+          ? "bg-electric-blue"
+          : "glass-card hover:bg-white/20"
       }`}
     >
       {section.name}
     </button>
   ));
 
-  const staffCards = (selectedSection ? getStaffBySection(selectedSection) : staff).map((staffMember: Staff) => (
-    renderStaffCard(staffMember)
-  ));
+  const staffCards = (
+    selectedSection ? getStaffBySection(selectedSection) : staffMembers
+  ).map((staffMember: Staff) => renderStaffCard(staffMember));
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Venue Metrics */}
       <motion.div
         initial={false}
-        animate={{ height: showMetrics ? 'auto' : 0 }}
+        animate={{ height: showMetrics ? "auto" : 0 }}
         className="overflow-hidden mb-8"
       >
         <div className="glass-card p-6">
@@ -138,7 +153,9 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
                 <CurrencyDollarIcon className="w-5 h-5" />
                 <span>Daily Revenue</span>
               </div>
-              <p className="text-3xl font-bold">${metrics.revenue.daily.toLocaleString()}</p>
+              <p className="text-3xl font-bold">
+                ${metrics.revenue.daily.toLocaleString()}
+              </p>
             </div>
             <div>
               <div className="flex items-center space-x-2 text-electric-blue mb-2">
@@ -156,7 +173,9 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
         <button
           onClick={() => setSelectedSection(null)}
           className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-            !selectedSection ? 'bg-electric-blue' : 'glass-card hover:bg-white/20'
+            !selectedSection
+              ? "bg-electric-blue"
+              : "glass-card hover:bg-white/20"
           }`}
         >
           All Staff
@@ -166,9 +185,7 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
 
       {/* Staff Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AnimatePresence mode="popLayout">
-          {staffCards}
-        </AnimatePresence>
+        <AnimatePresence mode="popLayout">{staffCards}</AnimatePresence>
       </div>
     </div>
   );

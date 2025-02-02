@@ -11,14 +11,14 @@ import Orders from "./pages/OrdersHistory";
 import Payment from "./pages/Payment";
 import Receipt from "./pages/Receipt";
 import ProductDetails from "./pages/ProductDetails";
-import Servers from "./pages/Servers";
+import Staff from "./pages/Staff";
 import BusinessInfo from "./pages/BusinessInfo";
 import OperatingHours from "./pages/OperatingHours";
 import TableManagement from "./pages/TableManagement";
 import AddTable from "./pages/AddTable";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { getCurrentUser } from "./store/slices/authSlice";
-import { setRandomVenue } from "./store/slices/venueSlice";
+import { fetchVenueDetails, setRandomVenue } from "./store/slices/venueSlice";
 import { socketService } from "./services/socketService";
 import {
   addNewPaidOrders,
@@ -28,12 +28,30 @@ import {
 import type { AppDispatch } from "./store";
 import type { Order, OrderStatus } from "./types";
 import ErrorBoundary from "./components/common/ErrorBoundary";
+import { fetchStaffMembersFromVenue } from "./store/slices/staffSlice";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        // New venue fetch
+        await dispatch(
+          fetchVenueDetails("d6a2ed83-30d5-419c-ad3f-0e837d7fcb93")
+        ); // Add this line
+        await dispatch(
+          fetchStaffMembersFromVenue("d6a2ed83-30d5-419c-ad3f-0e837d7fcb93")
+        );
+      } catch (error) {
+        console.error("Initial data loading error:", error);
+      }
+    };
+
+    fetchInitialData();
+
     // Set up socket connection for authenticated users
+
     socketService.connect();
 
     // Subscribe to all orders
@@ -104,7 +122,7 @@ function App() {
             <Route path="orders" element={<Orders />} />
             <Route path="payment" element={<Payment />} />
             <Route path="receipt" element={<Receipt />} />
-            <Route path="servers" element={<Servers />} />
+            <Route path="staff" element={<Staff />} />
           </Route>
         </Routes>
       </div>
