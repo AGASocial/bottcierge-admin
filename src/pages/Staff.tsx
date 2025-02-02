@@ -15,9 +15,9 @@ const Servers: React.FC = () => {
     (state: RootState) => state.staff
   );
 
-  // useEffect(() => {
-  //   dispatch(fetchStaff());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchStaffMembersFromVenue("d6a2ed83-30d5-419c-ad3f-0e837d7fcb94"));
+  }, [dispatch]);
 
   const getStatusColor = (status: StaffStatus): string => {
     const colors: Record<StaffStatus, string> = {

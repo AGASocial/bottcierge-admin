@@ -66,7 +66,16 @@ const Tables: React.FC = () => {
       {Object.entries(tablesBySection).map(([sectionId, sectionTables]) => (
         <div key={sectionId} className="mb-8">
           <h2 className="text-xl font-semibold mb-4 text-gray-200">
-            {sectionId === "default_section" ? "General Area" : sectionId} <span className="text-gray-400">(Min. {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(currentVenue?.pricingRules[sectionId] || 0)})</span>
+            {sectionId === "default_section" ? "General Area" : sectionId}{" "}
+            <span className="text-gray-400">
+              (Min.{" "}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 0,
+              }).format(currentVenue?.pricingRules[sectionId] || 0)}
+              )
+            </span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -94,10 +103,15 @@ const Tables: React.FC = () => {
                     Capacity: {table.capacity.minimum} -{" "}
                     {table.capacity.maximum} guests
                   </p>
-                  <p>Shape: {table.shape}</p>
+                  <p>Table type: {table.tableType}</p>
 
                   <p>
-                    Minimum Spend: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(currentVenue?.pricingRules[table.section] || 0)}
+                    Minimum Spend:{" "}
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 0,
+                    }).format(currentVenue?.pricingRules[table.section] || 0)}
                   </p>
                 </div>
               </div>

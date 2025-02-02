@@ -169,10 +169,20 @@ export enum TableStatus {
   MAINTENANCE = "maintenance",
 }
 
-export enum TableShape {
+export enum TableType {
   ROUND = "round",
   SQUARE = "square",
   RECTANGLE = "rectangle",
+  DANCE_FLOOR = "dance_floor",
+  LOUNGE = "lounge",
+  BAR_ADJACENT = "bar_adjacent",
+  BALCONY = "balcony",
+  ROOFTOP = "rooftop",
+  CORNER = "corner",
+  HIGH_TOP = "high_top",
+  SHARED = "shared",
+  BOOTH = "booth"
+  
 }
 
 export interface Table {
@@ -180,7 +190,7 @@ export interface Table {
   venueId: string;
   number: string;
   qrCode: string;
-  category: "regular" | "vip" | "booth";
+  category: "regular" | "vip";
   section: string;
   capacity: {
     minimum: number;
@@ -196,7 +206,7 @@ export interface Table {
   };
   minimumSpend: number;
   status: TableStatus;
-  shape: TableShape;
+  tableType: TableType;
   reservation: TableReservation | null;
   currentOrder: string | null;
   reservationHistory: ReservationHistory[];
