@@ -1,35 +1,50 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { 
-  TableCellsIcon, 
-  PlusIcon, 
-  PencilSquareIcon, 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  TableCellsIcon,
+  PlusIcon,
+  PencilSquareIcon,
   TrashIcon,
-  ExclamationTriangleIcon
-} from '@heroicons/react/24/outline';
-import Dialog from '../components/common/Dialog';
-import type { RootState } from '../store';
-import type { Table } from '../types';
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
+import Dialog from "../components/common/Dialog";
+import type { RootState, AppDispatch } from "../store";
+import type { Table } from "../types";
+import { fetchTablesByVenueId } from "../store/slices/tableSlice";
 
 const SECTION_NAMES: Record<string, string> = {
-  main_floor: 'Main Floor',
-  patio: 'Patio',
-  bar: 'Bar'
+  main_floor: "Main Floor",
+  patio: "Patio",
+  bar: "Bar",
 };
 
 const TableManagement: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { tables, loading, error } = useSelector(
+    (state: RootState) => state.table
+  );
   const { currentVenue } = useSelector((state: RootState) => state.venue);
   const [tableToDelete, setTableToDelete] = useState<Table | null>(null);
 
-  const tablesBySection = currentVenue?.tables.reduce((acc: Record<string, Table[]>, table) => {
-    if (!acc[table.sectionId]) {
-      acc[table.sectionId] = [];
+  useEffect(() => {
+    if (currentVenue?.id) {
+      dispatch(fetchTablesByVenueId(currentVenue.id));
     }
-    acc[table.sectionId].push(table);
-    return acc;
-  }, {}) || {};
+  }, [dispatch, currentVenue?.id]);
+
+  const tablesBySection = tables.reduce(
+    (acc: Record<string, Table[]>, table) => {
+      const section = table.section || "other";
+      if (!acc[section]) {
+        acc[section] = [];
+      }
+      acc[section].push(table);
+      return acc;
+    },
+    {}
+  );
 
   const handleEdit = (tableId: string) => {
     navigate(`/profile/tables/edit/${tableId}`);
@@ -42,7 +57,7 @@ const TableManagement: React.FC = () => {
   const confirmDelete = () => {
     if (tableToDelete) {
       // TODO: Implement delete table action
-      console.log('Deleting table:', tableToDelete.id);
+      console.log("Deleting table:", tableToDelete.id);
       setTableToDelete(null);
     }
   };
@@ -56,7 +71,7 @@ const TableManagement: React.FC = () => {
             <h1 className="text-2xl font-bold">Table Management</h1>
           </div>
           <button
-            onClick={() => navigate('/profile/tables/add')}
+            onClick={() => navigate("/profile/tables/add")}
             className="flex items-center space-x-2 px-4 py-2 bg-electric-blue text-white rounded-lg hover:bg-electric-blue/90 transition-colors"
           >
             <PlusIcon className="w-5 h-5" />
@@ -67,7 +82,9 @@ const TableManagement: React.FC = () => {
         <div className="space-y-6">
           {Object.entries(tablesBySection).map(([sectionId, tables]) => (
             <div key={sectionId} className="glass-card p-6">
-              <h2 className="text-xl font-bold mb-4">{SECTION_NAMES[sectionId]}</h2>
+              <h2 className="text-xl font-bold mb-4">
+                {SECTION_NAMES[sectionId]}
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {tables.map((table) => (
                   <div
@@ -75,15 +92,22 @@ const TableManagement: React.FC = () => {
                     className="bg-white/5 rounded-lg p-4 border border-white/10"
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-medium">Table {table.number}</h3>
-                      <span className={`px-2 py-1 rounded-full text-sm ${
-                        table.status === 'available' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                      }`}>
-                        {table.status.charAt(0).toUpperCase() + table.status.slice(1)}
+                      <h3 className="text-lg font-medium">
+                        Table {table.number}
+                      </h3>
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm ${
+                          table.status === "available"
+                            ? "bg-green-500/20 text-green-400"
+                            : "bg-red-500/20 text-red-400"
+                        }`}
+                      >
+                        {table.status.charAt(0).toUpperCase() +
+                          table.status.slice(1)}
                       </span>
                     </div>
                     <div className="space-y-1 text-gray-300">
-                      <p>Capacity: {table.capacity} guests</p>
+                      <p>Capacity: {table.capacity.minimum} - {table.capacity.maximum} guests</p>
                       <p>Shape: {table.shape}</p>
                       <p>Minimum Spend: ${table.minimumSpend}</p>
                     </div>

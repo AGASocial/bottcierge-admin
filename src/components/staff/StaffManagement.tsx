@@ -9,7 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 import type { AppDispatch, RootState } from "../../store";
 import { fetchVenueMetrics } from "../../store/slices/venueSlice";
-import type { Staff, Section } from "../../types";
+import type { Staff } from "../../types/staff.types";
 import { updateStaffStatus } from "@/store/slices/staffSlice";
 
 interface StaffManagementProps {
@@ -18,7 +18,6 @@ interface StaffManagementProps {
 
 const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { sections, metrics } = useSelector((state: RootState) => state.venue);
   const { staffMembers } = useSelector((state: RootState) => state.staff);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [showMetrics, setShowMetrics] = useState(false);
@@ -106,19 +105,19 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
     </motion.div>
   );
 
-  const sectionsList = sections.map((section: Section) => (
-    <button
-      key={section.id}
-      onClick={() => setSelectedSection(section.id)}
-      className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-        selectedSection === section.id
-          ? "bg-electric-blue"
-          : "glass-card hover:bg-white/20"
-      }`}
-    >
-      {section.name}
-    </button>
-  ));
+  // const sectionsList = sections.map((section: Section) => (
+  //   <button
+  //     key={section.id}
+  //     onClick={() => setSelectedSection(section.id)}
+  //     className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+  //       selectedSection === section.id
+  //         ? "bg-electric-blue"
+  //         : "glass-card hover:bg-white/20"
+  //     }`}
+  //   >
+  //     {section.name}
+  //   </button>
+  // ));
 
   const staffCards = (
     selectedSection ? getStaffBySection(selectedSection) : staffMembers
@@ -139,14 +138,14 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
                 <ChartBarIcon className="w-5 h-5" />
                 <span>Active Orders</span>
               </div>
-              <p className="text-3xl font-bold">{metrics.activeOrders}</p>
+              {/* <p className="text-3xl font-bold">{metrics.activeOrders}</p> */}
             </div>
             <div>
               <div className="flex items-center space-x-2 text-electric-blue mb-2">
                 <ClockIcon className="w-5 h-5" />
                 <span>Avg Wait Time</span>
               </div>
-              <p className="text-3xl font-bold">{metrics.averageWaitTime}m</p>
+              {/* <p className="text-3xl font-bold">{metrics.averageWaitTime}m</p> */}
             </div>
             <div>
               <div className="flex items-center space-x-2 text-electric-blue mb-2">
@@ -154,7 +153,7 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
                 <span>Daily Revenue</span>
               </div>
               <p className="text-3xl font-bold">
-                ${metrics.revenue.daily.toLocaleString()}
+                {/* ${metrics.revenue.daily.toLocaleString()} */}
               </p>
             </div>
             <div>
@@ -162,7 +161,7 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
                 <UserGroupIcon className="w-5 h-5" />
                 <span>Total Orders</span>
               </div>
-              <p className="text-3xl font-bold">{metrics.totalOrders}</p>
+              {/* <p className="text-3xl font-bold">{metrics.totalOrders}</p> */}
             </div>
           </div>
         </div>
@@ -180,7 +179,7 @@ const StaffManagement: React.FC<StaffManagementProps> = ({ venueId }) => {
         >
           All Staff
         </button>
-        {sectionsList}
+        {/* {sectionsList} */}
       </div>
 
       {/* Staff Grid */}

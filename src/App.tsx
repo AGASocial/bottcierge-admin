@@ -18,7 +18,7 @@ import TableManagement from "./pages/TableManagement";
 import AddTable from "./pages/AddTable";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { getCurrentUser } from "./store/slices/authSlice";
-import { fetchVenueDetails, setRandomVenue } from "./store/slices/venueSlice";
+import { fetchVenueDetails } from "./store/slices/venueSlice";
 import { socketService } from "./services/socketService";
 import {
   addNewPaidOrders,
@@ -38,10 +38,10 @@ function App() {
       try {
         // New venue fetch
         await dispatch(
-          fetchVenueDetails("d6a2ed83-30d5-419c-ad3f-0e837d7fcb93")
+          fetchVenueDetails("d6a2ed83-30d5-419c-ad3f-0e837d7fcb94")
         ); // Add this line
         await dispatch(
-          fetchStaffMembersFromVenue("d6a2ed83-30d5-419c-ad3f-0e837d7fcb93")
+          fetchStaffMembersFromVenue("d6a2ed83-30d5-419c-ad3f-0e837d7fcb94")
         );
       } catch (error) {
         console.error("Initial data loading error:", error);
@@ -90,9 +90,6 @@ function App() {
       socketService.unsubscribeFromAllOrders();
       socketService.disconnect();
     };
-
-    // Initialize venue with mock data
-    dispatch(setRandomVenue("default"));
   }, [dispatch]);
 
   return (

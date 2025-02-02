@@ -158,6 +158,11 @@ const Orders: React.FC = () => {
           })}
         </div>
       </div>
+      {orders.length === 0 && (
+        <div className="text-center text-gray-400 mt-8">
+          No orders found.
+        </div>
+      )}
     </div>
   );
 };

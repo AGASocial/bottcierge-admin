@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
-import type { Staff } from "../../types";
-import { staffService } from "../../services/staffService";
+import type { Staff } from "../../types/staff.types";
+import { staffService } from "../../services/staff.service";
 
 interface StaffState {
   staffMembers: Staff[];

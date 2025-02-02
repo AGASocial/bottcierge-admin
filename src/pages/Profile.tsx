@@ -33,7 +33,7 @@ const Profile: React.FC = () => {
         {/* Restaurant Settings */}
        
 
-        {/* Operating Hours */}
+        {/* Operating Hours
         <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Operating Hours</h2>
@@ -53,7 +53,7 @@ const Profile: React.FC = () => {
               <span className="text-gray-300">10:00 AM - 9:00 PM</span>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
@@ -67,12 +67,12 @@ const Profile: React.FC = () => {
             >
               Business Information
             </button>
-            <button 
+            {/* <button 
               onClick={() => navigate('/profile/hours')}
               className="w-full text-left py-2 hover:text-electric-blue transition-colors"
             >
               Operating Hours
-            </button>
+            </button> */}
             <button 
               onClick={() => navigate('/profile/tables')}
               className="w-full text-left py-2 hover:text-electric-blue transition-colors"

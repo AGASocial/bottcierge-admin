@@ -5,22 +5,6 @@ export interface User {
   role: "admin" | "staff" | "customer";
 }
 
-export interface PaymentMethod {
-  id: string;
-  type: "credit_card" | "apple_pay" | "google_pay";
-  lastFour: string;
-  token: string;
-  isDefault: boolean;
-  expiryDate: string;
-}
-
-export interface Favorite {
-  templateId: string;
-  name: string;
-  items: OrderItem[];
-  lastUsed: Date;
-}
-
 export interface OrderHistory {
   orderId: string;
   venueId: string;
@@ -178,121 +162,44 @@ export interface Section {
   };
 }
 
+export enum TableStatus {
+  AVAILABLE = "available",
+  RESERVED = "reserved",
+  OCCUPIED = "occupied",
+  MAINTENANCE = "maintenance",
+}
+
+export enum TableShape {
+  ROUND = "round",
+  SQUARE = "square",
+  RECTANGLE = "rectangle",
+}
+
 export interface Table {
   id: string;
-  number: string;
-  status: "available" | "occupied" | "reserved";
-  x: number;
-  y: number;
-  capacity: number;
-  sectionId: string;
-  minimumSpend: number;
-  notes?: string;
-  shape: "round" | "square" | "rectangle";
-  width: number;
-  height: number;
-}
-
-export interface Venue {
-  id: string;
-  name: string;
-  address: string;
-  description: string;
-  image?: string;
-  tables: Table[];
-  email?: string;
-  phone?: string;
-  location?: VenueLocation;
-  website?: string;
-  socialMedia?: {
-    facebook?: string;
-    instagram?: string;
-    twitter?: string;
-  };
-  operatingHours?: OperatingHours[];
-  pricingRules?: PricingRule[];
-  events?: VenueEvent[];
-  staff?: Staff[];
-  tableReservations?: TableReservation[];
-  reservationHistory?: ReservationHistory[];
-  paymentMethods?: PaymentMethod[];
-  favorites?: Favorite[];
-  orders?: Order[];
-  products?: Product[];
-  productCustomizations?: ProductCustomization[];
-}
-
-export interface VenueLocation {
-  id: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  phoneNumber: string;
-  timezone: string;
-  taxRate: number;
-}
-
-export interface OperatingHours {
-  dayOfWeek: string;
-  open: string;
-  close: string;
-  isOpen: boolean;
-}
-
-export interface PricingRule {
-  id: string;
-  name: string;
-  startTime: string;
-  endTime: string;
-  daysApplicable: number[];
-  multiplier: number;
-  affectedCategories: string[];
-}
-
-export interface VenueEvent {
-  id: string;
-  name: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-  specialMenu: boolean;
-  minimumSpend: number;
-  specialPricing: boolean;
-}
-
-export interface Staff {
-  id: string;
-  badgeNumber: string;
-  firstName: string;
-  lastName: string;
   venueId: string;
-  email: string;
-  phoneNumber: string;
-  role: "manager" | "server" | "bartender";
-  sections: string[];
-  isActive: boolean;
-  status: StaffStatus;
-  metrics: {
-    averageRating: number;
-    ordersServed: number;
-    salesVolume: number;
-    totalSales: number;
+  number: string;
+  qrCode: string;
+  category: "regular" | "vip" | "booth";
+  section: string;
+  capacity: {
+    minimum: number;
+    maximum: number;
   };
-  schedule: {
-    dayOfWeek: number;
-    start: string;
-    end: string;
-  }[];
-}
-
-export enum StaffStatus {
-  ACTIVE = "Active",
-  INACTIVE = "Inactive",
-  ON_BREAK = "On Break",
-  OFF_DUTY = "Off Duty",
-  SICK = "Sick",
-  VACATION = "Vacation",
+  location: {
+    floor: number;
+    position: string;
+    coordinates: {
+      x: number;
+      y: number;
+    };
+  };
+  minimumSpend: number;
+  status: TableStatus;
+  shape: TableShape;
+  reservation: TableReservation | null;
+  currentOrder: string | null;
+  reservationHistory: ReservationHistory[];
 }
 
 export interface TableReservation {

@@ -1,23 +1,22 @@
 import api from "./api";
-import { Staff, StaffStatus } from "../types";
+import { Staff, StaffStatus } from "../types/staff.types";
 
-
-export const staffService = {
+export const tableService = {
   // Get all servers
-  getStaff: async () => {
+  fetchTables: async () => {
     // TODO: Replace with actual API call
-    return api.get("/staff");
+    return api.get("/tables");
   },
 
-  getStaffMembersFromVenue: async (venueId: string) => {
+  fetchTablesFromVenue: async (venueId: string) => {
     // TODO: Replace with actual API call
-    return api.get(`/venues/${venueId}/staff`);
+    return api.get(`/tables/venue/${venueId}`);
   },
 
   // Get staff by ID
-  getServerById: async (serverId: string) => {
+  fetchTableById: async (tableId: string) => {
     // TODO: Replace with actual API call
-    return api.get(`/staff/${serverId}`);
+    return api.get(`/tables/${tableId}`);
   },
 
   // Create new staff
