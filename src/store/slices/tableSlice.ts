@@ -4,7 +4,7 @@ import { tableService } from "../../services/table.service";
 
 interface TableState {
   tables: Table[];
-  selectedTable: Table | null;
+  currentTable: Table | null;
   currentTableCode: string | null;
   loading: boolean;
   error: string | null;
@@ -12,7 +12,7 @@ interface TableState {
 
 const initialState: TableState = {
   tables: [],
-  selectedTable: null,
+  currentTable: null,
   currentTableCode: null,
   loading: false,
   error: null,
@@ -31,7 +31,7 @@ export const tableSlice = createSlice({
   initialState,
   reducers: {
     selectTable: (state, action: PayloadAction<Table | null>) => {
-      state.selectedTable = action.payload;
+      state.currentTable = action.payload;
     },
     setCurrentTableCode: (state, action: PayloadAction<string | null>) => {
       state.currentTableCode = action.payload;
