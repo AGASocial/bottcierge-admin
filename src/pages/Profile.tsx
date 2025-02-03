@@ -74,13 +74,13 @@ const Profile: React.FC = () => {
               Operating Hours
             </button> */}
             <button 
-              onClick={() => navigate('/profile/tables')}
-              className="w-full text-left py-2 hover:text-electric-blue transition-colors"
+              // onClick={() => navigate('/profile/tables')}
+              className="w-full text-left py-2 text-gray-300  transition-colors"
             >
-              Table Management
+              Table Management (Coming soon)
             </button>
-            <button className="w-full text-left py-2 hover:text-electric-blue transition-colors">
-              Inventory Management
+            <button className="w-full text-left py-2 text-gray-300  transition-colors">
+              Inventory Management (Coming soon)
             </button>
           </div>
         </div>
