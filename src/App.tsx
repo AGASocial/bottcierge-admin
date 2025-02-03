@@ -29,6 +29,7 @@ import type { AppDispatch } from "./store";
 import type { Order, OrderStatus } from "./types";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { fetchStaffMembersFromVenue } from "./store/slices/staffSlice";
+import { DEFAULT_VENUE_ID } from "./utils/orderConstants";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -37,11 +38,9 @@ function App() {
     const fetchInitialData = async () => {
       try {
         // New venue fetch
+        await dispatch(fetchVenueDetails(DEFAULT_VENUE_ID)); // Add this line
         await dispatch(
-          fetchVenueDetails("d6a2ed83-30d5-419c-ad3f-0e837d7fcb94")
-        ); // Add this line
-        await dispatch(
-          fetchStaffMembersFromVenue("d6a2ed83-30d5-419c-ad3f-0e837d7fcb94")
+          fetchStaffMembersFromVenue(DEFAULT_VENUE_ID)
         );
       } catch (error) {
         console.error("Initial data loading error:", error);

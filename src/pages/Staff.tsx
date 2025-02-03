@@ -7,7 +7,7 @@ import {
   updateStaffStatus,
 } from "../store/slices/staffSlice";
 import type { AppDispatch } from "../store";
-import { formatTime, getDayName } from "@/utils/orderConstants";
+import { DEFAULT_VENUE_ID, formatTime, getDayName } from "@/utils/orderConstants";
 
 const Servers: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,7 +16,7 @@ const Servers: React.FC = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchStaffMembersFromVenue("d6a2ed83-30d5-419c-ad3f-0e837d7fcb94"));
+    dispatch(fetchStaffMembersFromVenue(DEFAULT_VENUE_ID));
   }, [dispatch]);
 
   const getStatusColor = (status: StaffStatus): string => {

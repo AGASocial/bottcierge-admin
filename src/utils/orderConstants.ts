@@ -1,5 +1,7 @@
 import type { OrderStatus, OrderStatusType } from "../types";
 
+export const DEFAULT_VENUE_ID = "d6a2ed83-30d5-419c-ad3f-0e837d7fcb94";
+
 export const ORDER_STATUS_COLORS: Record<OrderStatusType, string> = {
   draft: "bg-amber-500", // Warm yellow for draft
   paid: "bg-electric-blue", // Our custom electric blue for paid
@@ -39,12 +41,15 @@ export const getDayName = (dayNumber: number) => {
 export const formatTime = (timeString: string) => {
   const hours = parseInt(timeString.substring(0, 2));
   const minutes = timeString.substring(2);
-  if(!hours || !minutes) return "";
-  return new Date(0, 0, 0, hours, parseInt(minutes)).toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  });
+  if (!hours || !minutes) return "";
+  return new Date(0, 0, 0, hours, parseInt(minutes)).toLocaleTimeString(
+    "en-US",
+    {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }
+  );
 };
 
 // You can add more order-related constants here in the future
