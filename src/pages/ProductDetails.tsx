@@ -56,17 +56,17 @@ const ProductDetails: React.FC = () => {
             { id: "soda", name: "Club Soda", price: 0 },
           ],
         },
-        {
-          id: "ice",
-          name: "Ice Preference",
-          type: "radio",
-          required: true,
-          options: [
-            { id: "regular", name: "Regular Ice", price: 0 },
-            { id: "light", name: "Light Ice", price: 0 },
-            { id: "no", name: "No Ice", price: 0 },
-          ],
-        },
+        // {
+        //   id: "ice",
+        //   name: "Ice Preference",
+        //   type: "radio",
+        //   required: true,
+        //   options: [
+        //     { id: "regular", name: "Regular Ice", price: 0 },
+        //     { id: "light", name: "Light Ice", price: 0 },
+        //     { id: "no", name: "No Ice", price: 0 },
+        //   ],
+        // },
       ]);
     }
   }, [product]);
@@ -262,8 +262,7 @@ const ProductDetails: React.FC = () => {
                   (opt) => opt.required && !selectedOptions[opt.id]
                 )
               }
-              className="w-full py-3 px-4 bg-deep-blue text-white rounded-lg font-medium 
-                hover:bg-light-blue disabled:bg-deep-blue/50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex justify-center py-2 px-4 border border-white/20 rounded-md shadow-sm text-sm font-medium text-white bg-white/5 hover:bg-light-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-blue"
             >
               Add to Order
             </button>

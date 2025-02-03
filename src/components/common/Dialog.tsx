@@ -52,7 +52,7 @@ const Dialog: React.FC<DialogProps> = ({
   const styles = getTypeStyles();
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
       <div className="glass-card p-6 max-w-md w-full">
         <div className="flex items-center space-x-4 mb-4">
           <ExclamationTriangleIcon className={`w-8 h-8 ${styles.icon}`} />
