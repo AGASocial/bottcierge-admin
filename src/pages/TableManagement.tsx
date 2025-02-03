@@ -107,8 +107,11 @@ const TableManagement: React.FC = () => {
                       </span>
                     </div>
                     <div className="space-y-1 text-gray-300">
-                      <p>Capacity: {table.capacity.minimum} - {table.capacity.maximum} guests</p>
-                      <p>Shape: {table.shape}</p>
+                      <p>
+                        Capacity: {table.capacity.minimum} -{" "}
+                        {table.capacity.maximum} guests
+                      </p>
+                      <p>Shape: {table.tableType}</p>
                       <p>Minimum Spend: ${table.minimumSpend}</p>
                     </div>
                     <div className="flex justify-end space-x-2 mt-4">

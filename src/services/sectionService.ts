@@ -1,26 +1,39 @@
-import { Section, Table } from '../types';
+import { Section, Table, TableStatus, TableType } from "../types";
 
 // Mock data for development
 const mockSections: Section[] = [
   {
-    id: '1',
-    name: 'VIP Area',
-    description: 'Premium seating area',
-    type: 'VIP',
+    id: "1",
+    name: "VIP Area",
+    description: "Premium seating area",
+    type: "VIP",
     isActive: true,
     tables: [
       {
-        id: '1',
-        number: 'VIP-1',
-        status: 'available',
-        x: 10,
-        y: 10,
-        capacity: 6,
-        sectionId: '1',
-        shape: 'round',
-        width: 100,
-        height: 100,
+        id: "1",
+        number: "VIP-1",
+        status: TableStatus.AVAILABLE,
+        location: {
+          floor: 0,
+          position: "",
+          coordinates: {
+            x: 10,
+            y: 10,
+          },
+        },
+        capacity: {
+          minimum: 2,
+          maximum: 6,
+        },
+        section: "Bar",
+        tableType: TableType.ROUND,
         minimumSpend: 1000,
+        venueId: "",
+        qrCode: "",
+        category: "regular",
+        reservation: null,
+        currentOrder: null,
+        reservationHistory: [],
       },
     ],
     position: {
@@ -42,7 +55,7 @@ export const sectionService = {
     });
   },
 
-  createSection: async (section: Omit<Section, 'id'>): Promise<Section> => {
+  createSection: async (section: Omit<Section, "id">): Promise<Section> => {
     // Mock API call
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -86,7 +99,7 @@ export const sectionService = {
     // Mock API call
     return new Promise((resolve) => {
       setTimeout(() => {
-        const section = mockSections.find((s) => s.id === table.sectionId);
+        const section = mockSections.find((s) => s.id === table.section);
         if (section) {
           const tableIndex = section.tables.findIndex((t) => t.id === table.id);
           if (tableIndex !== -1) {

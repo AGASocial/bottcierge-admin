@@ -1,8 +1,8 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import type { Table } from '../../types';
-import type { RootState } from '../../store';
+import React from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import type { Table } from "../../types";
+import type { RootState } from "../../store";
 
 interface TableMapProps {
   onTableSelect?: (table: Table) => void;
@@ -11,7 +11,7 @@ interface TableMapProps {
 const TableMap: React.FC<TableMapProps> = ({ onTableSelect }) => {
   const navigate = useNavigate();
   const { currentVenue } = useSelector((state: RootState) => state.venue);
-  const tables = currentVenue?.tables || [];
+  const { tables } = useSelector((state: RootState) => state.table);
 
   const handleTableClick = (table: Table) => {
     if (onTableSelect) {
@@ -23,37 +23,42 @@ const TableMap: React.FC<TableMapProps> = ({ onTableSelect }) => {
 
   const getTableStatusColor = (status: string) => {
     switch (status) {
-      case 'available':
-        return 'bg-green-500';
-      case 'occupied':
-        return 'bg-red-500';
-      case 'reserved':
-        return 'bg-yellow-500';
+      case "available":
+        return "bg-green-500";
+      case "occupied":
+        return "bg-red-500";
+      case "reserved":
+        return "bg-yellow-500";
       default:
-        return 'bg-gray-500';
+        return "bg-gray-500";
     }
   };
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-      {tables.map((table) => (
+      {tables.map((table: Table) => (
         <button
           key={table.id}
           onClick={() => handleTableClick(table)}
           className={`p-4 rounded-lg border ${
-            table.status === 'available'
-              ? 'hover:border-blue-500 cursor-pointer'
-              : 'opacity-50 cursor-not-allowed'
+            table.status === "available"
+              ? "hover:border-blue-500 cursor-pointer"
+              : "opacity-50 cursor-not-allowed"
           }`}
         >
           <div className="flex items-center justify-between mb-2">
             <span className="font-semibold">Table {table.number}</span>
-            <span className={`w-3 h-3 rounded-full ${getTableStatusColor(table.status)}`} />
+            <span
+              className={`w-3 h-3 rounded-full ${getTableStatusColor(
+                table.status
+              )}`}
+            />
           </div>
           <div className="text-sm text-gray-400">
-            <p>Capacity: {table.capacity}</p>
-            <p>Shape: {table.shape}</p>
-            <p>Size: {table.width}x{table.height}</p>
+            <p>
+              Capacity: {table.capacity.minimum} - {table.capacity.maximum}
+            </p>
+            <p>Shape: {table.tableType}</p>
           </div>
         </button>
       ))}

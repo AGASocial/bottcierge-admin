@@ -1,23 +1,24 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { ClockIcon } from '@heroicons/react/24/outline';
-import type { RootState } from '../store';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { ClockIcon } from "@heroicons/react/24/outline";
+import type { RootState } from "../store";
+import { getDayName } from "@/utils/orderConstants";
 
 const DAYS_OF_WEEK = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday'
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
 ];
 
 const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
   const hour = Math.floor(i / 2);
-  const minute = i % 2 === 0 ? '00' : '30';
-  const period = hour < 12 ? 'AM' : 'PM';
+  const minute = i % 2 === 0 ? "00" : "30";
+  const period = hour < 12 ? "AM" : "PM";
   const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
   return `${displayHour}:${minute} ${period}`;
 });
@@ -25,21 +26,23 @@ const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
 const OperatingHours: React.FC = () => {
   const navigate = useNavigate();
   const { currentVenue } = useSelector((state: RootState) => state.venue);
-  
-  const getDefaultTime = (type: 'open' | 'close', day: string) => {
-    const hours = currentVenue?.operatingHours?.find(h => h.dayOfWeek === day);
-    if (type === 'open') return hours?.open || '11:00 AM';
-    return hours?.close || '10:00 PM';
+
+  const getDefaultTime = (type: "open" | "close", day: number) => {
+    const hours = currentVenue?.operatingHours?.find(
+      (h) => h.dayOfWeek === day
+    );
+    if (type === "open") return hours?.open || "11:00 AM";
+    return hours?.close || "10:00 PM";
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Save operating hours
-    navigate('/profile');
+    navigate("/profile");
   };
 
   const handleCancel = () => {
-    navigate('/profile');
+    navigate("/profile");
   };
 
   return (
@@ -53,17 +56,19 @@ const OperatingHours: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="glass-card p-6">
             <div className="space-y-6">
-              {DAYS_OF_WEEK.map((day) => (
+              {[0, 1, 2, 3, 4, 5, 6].map((day) => (
                 <div key={day} className="grid grid-cols-3 gap-4 items-center">
-                  <div className="text-gray-300 font-medium">{day}</div>
+                  <div className="text-gray-300 font-medium">
+                    {getDayName(day)}
+                  </div>
                   <div>
                     <label htmlFor={`${day}-open`} className="sr-only">
-                      Opening Time for {day}
+                      Opening Time for {getDayName(day) || day}
                     </label>
                     <select
                       id={`${day}-open`}
                       name={`${day}-open`}
-                      defaultValue={getDefaultTime('open', day)}
+                      defaultValue={getDefaultTime("open", day)}
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                     >
                       {TIME_OPTIONS.map((time) => (
@@ -80,7 +85,7 @@ const OperatingHours: React.FC = () => {
                     <select
                       id={`${day}-close`}
                       name={`${day}-close`}
-                      defaultValue={getDefaultTime('close', day)}
+                      defaultValue={getDefaultTime("close", day)}
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-electric-blue focus:ring-1 focus:ring-electric-blue"
                     >
                       {TIME_OPTIONS.map((time) => (

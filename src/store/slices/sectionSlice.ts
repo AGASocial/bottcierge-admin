@@ -91,7 +91,7 @@ const sectionSlice = createSlice({
       })
       .addCase(updateTable.fulfilled, (state, action) => {
         const sectionIndex = state.sections.findIndex(
-          (s) => s.id === action.payload.sectionId
+          (s) => s.id === action.payload.section
         );
         if (sectionIndex !== -1) {
           const tableIndex = state.sections[sectionIndex].tables.findIndex(

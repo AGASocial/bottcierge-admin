@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { AppDispatch } from '../store';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { AppDispatch } from "../store";
 import {
   fetchSections,
   createSection,
@@ -9,8 +9,8 @@ import {
   deleteSection,
   updateTable,
   setSelectedSection,
-} from '../store/slices/sectionSlice';
-import { Section, Table } from '../types';
+} from "../store/slices/sectionSlice";
+import { Section, Table, TableStatus, TableType } from "../types";
 
 const Sections: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,10 +24,10 @@ const Sections: React.FC = () => {
   }, [dispatch]);
 
   const handleCreateSection = () => {
-    const newSection: Omit<Section, 'id'> = {
-      name: 'New Section',
-      description: '',
-      type: 'GENERAL',
+    const newSection: Omit<Section, "id"> = {
+      name: "New Section",
+      description: "",
+      type: "GENERAL",
       isActive: true,
       tables: [],
       position: {
@@ -45,7 +45,7 @@ const Sections: React.FC = () => {
   };
 
   const handleDeleteSection = (sectionId: string) => {
-    if (window.confirm('Are you sure you want to delete this section?')) {
+    if (window.confirm("Are you sure you want to delete this section?")) {
       dispatch(deleteSection(sectionId));
     }
   };
@@ -60,14 +60,14 @@ const Sections: React.FC = () => {
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      const updatedTable: Table = {
-        ...draggedTable,
-        x,
-        y,
-        sectionId,
-      };
+      // const updatedTable: Table = {
+      //   ...draggedTable,
+      //   x,
+      //   y,
+      //   sectionId,
+      // };
 
-      dispatch(updateTable(updatedTable));
+      // dispatch(updateTable(updatedTable));
       setDraggedTable(null);
     }
   };
@@ -76,15 +76,28 @@ const Sections: React.FC = () => {
     const newTable: Table = {
       id: Math.random().toString(36).substr(2, 9),
       number: `T-${Math.floor(Math.random() * 100)}`,
-      status: 'available',
-      x: 50,
-      y: 50,
-      capacity: 4,
-      sectionId,
-      shape: 'round',
-      width: 80,
-      height: 80,
+      status: TableStatus.AVAILABLE,
+      capacity: {
+        minimum: 2,
+        maximum: 6,
+      },
+      section: sectionId,
+      tableType: TableType.ROUND,
       minimumSpend: 1000,
+      venueId: "",
+      qrCode: "",
+      category: "regular",
+      location: {
+        floor: 0,
+        position: "",
+        coordinates: {
+          x: 0,
+          y: 0,
+        },
+      },
+      reservation: null,
+      currentOrder: null,
+      reservationHistory: [],
     };
 
     const section = sections.find((s) => s.id === sectionId);
@@ -147,14 +160,14 @@ const Sections: React.FC = () => {
             <div
               className="border rounded-lg p-4 bg-gray-50 relative"
               style={{
-                width: '100%',
-                height: '200px',
-                overflow: 'hidden',
+                width: "100%",
+                height: "200px",
+                overflow: "hidden",
               }}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => handleTableDragEnd(e, section.id)}
             >
-              {section.tables.map((table) => (
+              {/* {section.tables.map((table) => (
                 <div
                   key={table.id}
                   draggable
@@ -166,19 +179,19 @@ const Sections: React.FC = () => {
                       ? 'border-yellow-500'
                       : 'border-green-500'
                   }`}
-                  style={{
-                    left: table.x,
-                    top: table.y,
-                    width: table.width,
-                    height: table.height,
-                  }}
+                  style={
+                    left: table.location.coordinates.x,
+                    top: table.location.coordinates.y,
+                    width: 50, 
+                    height: 50,
+                  }
                 >
                   <div className="text-sm">
                     <div>{table.number}</div>
                     <div className="text-xs">{table.capacity}p</div>
                   </div>
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
         ))}
