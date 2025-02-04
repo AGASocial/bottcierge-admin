@@ -98,6 +98,7 @@ const Sections: React.FC = () => {
       reservation: null,
       currentOrder: null,
       reservationHistory: [],
+      userId: "",
     };
 
     const section = sections.find((s) => s.id === sectionId);
