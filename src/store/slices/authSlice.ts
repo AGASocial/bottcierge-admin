@@ -50,7 +50,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.user = null;
+      state.currentUser = null;
       localStorage.removeItem('token');
     },
     clearError: (state) => {
@@ -66,7 +66,7 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.currentUser = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -79,12 +79,12 @@ const authSlice = createSlice({
       })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.currentUser = action.payload;
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to get current user';
-        state.user = null;
+        state.currentUser = null;
       })
       // Register
       .addCase(register.pending, (state) => {
@@ -93,7 +93,7 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.currentUser = action.payload;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
