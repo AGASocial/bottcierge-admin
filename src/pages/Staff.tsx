@@ -7,7 +7,11 @@ import {
   updateStaffStatus,
 } from "../store/slices/staffSlice";
 import type { AppDispatch } from "../store";
-import { DEFAULT_VENUE_ID, formatTime, getDayName } from "@/utils/orderConstants";
+import {
+  DEFAULT_VENUE_ID,
+  formatTime,
+  getDayName,
+} from "@/utils/orderConstants";
 
 const Servers: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,12 +25,12 @@ const Servers: React.FC = () => {
 
   const getStatusColor = (status: StaffStatus): string => {
     const colors: Record<StaffStatus, string> = {
-      [StaffStatus.ACTIVE]: "bg-green-500",
-      [StaffStatus.INACTIVE]: "bg-gray-500",
-      [StaffStatus.ON_BREAK]: "bg-yellow-500",
-      [StaffStatus.OFF_DUTY]: "bg-red-500",
-      [StaffStatus.SICK]: "bg-blue-500",
-      [StaffStatus.VACATION]: "bg-purple-500",
+      [StaffStatus.ACTIVE]: "bg-green-500/20 text-green-300",
+      [StaffStatus.INACTIVE]: "bg-gray-500 text-white",
+      [StaffStatus.ON_BREAK]: "bg-yellow-500 text-yellow-900",
+      [StaffStatus.OFF_DUTY]: "bg-red-500 text-red-900",
+      [StaffStatus.SICK]: "bg-blue-500 text-blue-900",
+      [StaffStatus.VACATION]: "bg-purple-500 text-purple-100",
     };
     return colors[status];
   };
@@ -48,7 +52,10 @@ const Servers: React.FC = () => {
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
-      <div className="glass-card p-6 space-y-4">
+      <div
+        className="glass-card p-6 space-y-4 cursor-pointer hover:border-white/30"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-xl font-bold">{staffMember.firstName}</h3>
@@ -57,10 +64,9 @@ const Servers: React.FC = () => {
           </div>
           <div className="flex flex-col items-end relative">
             <button
-              onClick={() => setIsOpen(!isOpen)}
-              className={`px-3 py-1 rounded-full text-sm ${getStatusColor(
+              className={`px-3 py-1 rounded text-xs ${getStatusColor(
                 staffMember.status
-              )} text-white hover:opacity-90 transition-opacity`}
+              )} hover:opacity-90 transition-opacity min-w-20`}
             >
               {staffMember.status}
             </button>

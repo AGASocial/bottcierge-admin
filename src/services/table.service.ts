@@ -1,5 +1,5 @@
 import api from "./api";
-import { Staff, StaffStatus } from "../types/staff.types";
+import { Table } from "../types";
 
 export const tableService = {
   // Get all servers
@@ -19,20 +19,11 @@ export const tableService = {
     return api.get(`/tables/${tableId}`);
   },
 
-  // Create new staff
-  createServer: async (serverData: Partial<Staff>) => {
-    return {};
-  },
-
-  // Update staff
-  updateServer: async (serverId: string, data: Partial<Staff>) => {
-    // TODO: Replace with actual API call
-    return [];
-  },
-
-  // Update staff status
-  updateServerStatus: async (serverId: string, status: StaffStatus) => {
-    // TODO: Replace with actual API call
-    return [];
+  // Update table status
+  updateTableStatus: async (tableId: string, status: string) => {
+    return api.patch(`/tables/${tableId}/status`, {
+      status,
+      assigned: false
+    });
   },
 };

@@ -26,6 +26,22 @@ export const fetchTablesByVenueId = createAsyncThunk(
   }
 );
 
+interface UpdateTableStatusPayload {
+  tableId: string;
+  status: string;
+  venueId: string;
+}
+
+export const updateTableStatus = createAsyncThunk(
+  "table/updateTableStatus",
+  async ({ tableId, status, venueId }: UpdateTableStatusPayload, { dispatch }) => {
+    await tableService.updateTableStatus(tableId, status);
+    // Refresh tables after status update
+    const response = await tableService.fetchTablesFromVenue(venueId);
+    return response.data;
+  }
+);
+
 export const tableSlice = createSlice({
   name: "table",
   initialState,
@@ -59,6 +75,18 @@ export const tableSlice = createSlice({
       .addCase(fetchTablesByVenueId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch tables";
+      })
+      .addCase(updateTableStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTableStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tables = action.payload;
+      })
+      .addCase(updateTableStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to update table status";
       });
   },
 });

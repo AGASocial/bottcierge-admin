@@ -212,6 +212,7 @@ export interface Table {
   reservation: TableReservation | null;
   currentOrder: string | null;
   reservationHistory: ReservationHistory[];
+  userId: string | null;
 }
 
 export interface TableReservation {
