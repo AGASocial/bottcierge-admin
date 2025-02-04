@@ -3,13 +3,13 @@ import api from '../../services/api';
 import type { User } from '../../types';
 
 interface AuthState {
-  user: User | null;
+  currentUser: User | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
-  user: null,
+  currentUser: null,
   loading: false,
   error: null,
 };
