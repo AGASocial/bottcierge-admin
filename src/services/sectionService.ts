@@ -34,6 +34,7 @@ const mockSections: Section[] = [
         reservation: null,
         currentOrder: null,
         reservationHistory: [],
+        userId: "",
       },
     ],
     position: {
